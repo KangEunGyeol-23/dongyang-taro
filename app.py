@@ -14,7 +14,7 @@ if "user" not in st.session_state:
         if email in ALLOWED_USERS:
             st.session_state.user = email
             st.success(f"{email} 님 환영합니다.")
-            st.experimental_rerun()
+            st.rerun()  # 최신 버전용으로 수정
         else:
             st.error("접근 권한이 없습니다.")
     st.stop()
