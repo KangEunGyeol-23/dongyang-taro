@@ -3,6 +3,22 @@ from PIL import Image
 import os
 import random
 
+# ✅ 로그인 허용 이메일 목록
+ALLOWED_USERS = ["cotty79@naver.com"]
+
+# ✅ 로그인 처리
+if "user" not in st.session_state:
+    st.markdown("## 🔐 로그인")
+    email = st.text_input("이메일을 입력하세요")
+    if st.button("로그인"):
+        if email in ALLOWED_USERS:
+            st.session_state.user = email
+            st.success(f"{email} 님 환영합니다.")
+            st.experimental_rerun()
+        else:
+            st.error("접근 권한이 없습니다.")
+    st.stop()
+
 # 세션 초기화
 if 'mode' not in st.session_state:
     st.session_state.mode = None
@@ -67,12 +83,10 @@ elif st.session_state.mode == "3카드":
                 img = img.rotate(180)
             st.image(img, caption=f"{card} ({direction})", use_column_width=True)
 
-            # 역방향이면 보조카드 버튼
             if direction == "역방향" and st.session_state.extra_cards[i] is None:
                 if st.button(f"🔁 보조카드 ({i+1})"):
                     st.session_state.extra_cards[i] = draw_cards(1)[0]
 
-            # 보조카드 표시
             if st.session_state.extra_cards[i] is not None:
                 extra_card, extra_dir = st.session_state.extra_cards[i]
                 st.markdown("**→ 보조카드**")
