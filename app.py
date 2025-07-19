@@ -3,7 +3,7 @@ from PIL import Image
 import os
 import random
 
-# ✅ 허용된 이메일 목록
+# ✅ 로그인 허용 유저
 ALLOWED_USERS = ["cotty79@naver.com"]
 
 # ✅ 로그인 처리
@@ -19,25 +19,24 @@ if "user" not in st.session_state:
             st.error("접근 권한이 없습니다.")
     st.stop()
 
-# 세션 초기화
+# ✅ 세션 초기화
 if 'mode' not in st.session_state:
     st.session_state.mode = None
 if 'cards' not in st.session_state:
     st.session_state.cards = []
-if 'reversed' not in st.session_state:
-    st.session_state.reversed = []
 if 'extra_cards' not in st.session_state:
     st.session_state.extra_cards = []
 
 img_folder = "카드이미지"
 
-# 카드 리스트 불러오기
+# ✅ 카드 이미지 불러오기
 def load_cards():
     if not os.path.exists(img_folder):
         st.error(f"이미지 폴더가 없습니다: {img_folder}")
         return []
     return [f for f in os.listdir(img_folder) if f.lower().endswith(('png', 'jpg', 'jpeg'))]
 
+# ✅ 카드 뽑기
 def draw_cards(n):
     card_pool = load_cards()
     if len(card_pool) < n:
@@ -46,7 +45,14 @@ def draw_cards(n):
     directions = [random.choice(['정방향', '역방향']) for _ in range(n)]
     return list(zip(cards, directions))
 
-# 처음 화면
+# ✅ 카드 출력 함수
+def show_card(card, direction, width=220):
+    img = Image.open(os.path.join(img_folder, card))
+    if direction == "역방향":
+        img = img.rotate(180)
+    st.image(img, caption=f"{card} ({direction})", width=width)
+
+# ✅ 메인 화면
 if st.session_state.mode is None:
     st.markdown("---")
     st.markdown("<h2 style='text-align:center;'>🌗 동양타로</h2>", unsafe_allow_html=True)
@@ -76,14 +82,7 @@ if st.session_state.mode is None:
             st.session_state.extra_cards = [None]
             st.session_state.mode = "조언카드"
 
-# 카드 표시 함수
-def show_card(card, direction, width=250):
-    img = Image.open(os.path.join(img_folder, card))
-    if direction == "역방향":
-        img = img.rotate(180)
-    st.image(img, caption=f"{card} ({direction})", width=width)
-
-# 3카드 보기
+# ✅ 3카드 보기
 elif st.session_state.mode == "3카드":
     st.markdown("## 🃏 3장의 카드")
     cols = st.columns(3)
@@ -91,24 +90,24 @@ elif st.session_state.mode == "3카드":
         with cols[i]:
             show_card(card, direction)
 
-    col_buttons = st.columns(3)
+    cols_btn = st.columns(3)
     for i, (card, direction) in enumerate(st.session_state.cards):
         if direction == "역방향" and st.session_state.extra_cards[i] is None:
-            with col_buttons[i]:
+            with cols_btn[i]:
                 if st.button(f"🔁 보조카드 ({i+1})"):
                     st.session_state.extra_cards[i] = draw_cards(1)[0]
 
-    col_extras = st.columns(3)
+    cols_extra = st.columns(3)
     for i in range(3):
         if st.session_state.extra_cards[i] is not None:
             extra_card, extra_dir = st.session_state.extra_cards[i]
-            with col_extras[i]:
+            with cols_extra[i]:
                 st.markdown("**→ 보조카드**")
                 show_card(extra_card, extra_dir)
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-# 원카드
+# ✅ 원카드
 elif st.session_state.mode == "원카드":
     st.markdown("## 🃏 한 장의 카드")
     card, direction = st.session_state.cards[0]
@@ -125,7 +124,7 @@ elif st.session_state.mode == "원카드":
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-# 조언카드
+# ✅ 조언카드
 elif st.session_state.mode == "조언카드":
     st.markdown("## 🗣 오늘의 조언 카드")
     card, direction = st.session_state.cards[0]
@@ -142,7 +141,7 @@ elif st.session_state.mode == "조언카드":
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-# 양자택일
+# ✅ 양자택일
 elif st.session_state.mode == "양자택일":
     st.markdown("## 🔀 양자택일 카드")
     if len(st.session_state.cards) < 2:
