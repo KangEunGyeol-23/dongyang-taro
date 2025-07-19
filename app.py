@@ -30,8 +30,10 @@ if 'extra_cards' not in st.session_state:
     st.session_state.extra_cards = []
 if 'advice_card' not in st.session_state:
     st.session_state.advice_card = None
-if 'question' not in st.session_state:
-    st.session_state.question = ""
+if 'question_yes' not in st.session_state:
+    st.session_state.question_yes = ""
+if 'question_no' not in st.session_state:
+    st.session_state.question_no = ""
 
 img_folder = "카드이미지"
 
@@ -50,7 +52,7 @@ def draw_cards(n):
     directions = [random.choice(['정방향', '역방향']) for _ in range(n)]
     return list(zip(cards, directions))
 
-# 카드 표시 함수 (조건문보다 위에 둬야 함)
+# 카드 표시 함수
 def show_card(card, direction, width=200):
     img = Image.open(os.path.join(img_folder, card))
     if direction == "역방향":
@@ -157,7 +159,8 @@ elif st.session_state.mode == "조언카드":
 elif st.session_state.mode == "양자택일":
     st.markdown("## 🔀 양자택일 카드")
 
-    st.session_state.question = st.text_input("당신의 질문을 입력하세요:", value=st.session_state.question)
+    st.session_state.question_yes = st.text_input("Yes에 해당하는 질문을 입력하세요:", value=st.session_state.question_yes)
+    st.session_state.question_no = st.text_input("No에 해당하는 질문을 입력하세요:", value=st.session_state.question_no)
 
     if len(st.session_state.cards) < 2:
         st.session_state.cards = draw_cards(2)
@@ -165,6 +168,8 @@ elif st.session_state.mode == "양자택일":
     cols = st.columns(2)
     for i, (card, direction) in enumerate(st.session_state.cards):
         with cols[i]:
+            label = "Yes" if i == 0 else "No"
+            st.markdown(f"#### {label} - {st.session_state.question_yes if i == 0 else st.session_state.question_no}")
             show_card(card, direction)
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
