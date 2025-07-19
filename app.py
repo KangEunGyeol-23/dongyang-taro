@@ -48,7 +48,14 @@ def draw_cards(n):
     directions = [random.choice(['정방향', '역방향']) for _ in range(n)]
     return list(zip(cards, directions))
 
-# 처음 화면
+# 카드 표시 함수 (조건문보다 위에 둬야 함)
+def show_card(card, direction, width=200):
+    img = Image.open(os.path.join(img_folder, card))
+    if direction == "역방향":
+        img = img.rotate(180)
+    st.image(img, caption=f"{card} ({direction})", width=width)
+
+# 메인화면
 if st.session_state.mode is None:
     st.markdown("---")
     st.markdown("<h2 style='text-align:center;'>🌗 동양타로</h2>", unsafe_allow_html=True)
@@ -79,14 +86,6 @@ if st.session_state.mode is None:
             st.session_state.extra_cards = [None]
             st.session_state.mode = "조언카드"
 
-# 카드 표시 함수
-def show_card(card, direction, width=200):
-    img = Image.open(os.path.join(img_folder, card))
-    if direction == "역방향":
-        img = img.rotate(180)
-    st.image(img, caption=f"{card} ({direction})", width=width)
-
-# 3카드 보기
 elif st.session_state.mode == "3카드":
     st.markdown("## 🃏 3장의 카드")
     cols = st.columns(3)
@@ -121,7 +120,6 @@ elif st.session_state.mode == "3카드":
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-# 원카드
 elif st.session_state.mode == "원카드":
     st.markdown("## 🃏 한 장의 카드")
     card, direction = st.session_state.cards[0]
@@ -138,7 +136,6 @@ elif st.session_state.mode == "원카드":
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-# 조언카드
 elif st.session_state.mode == "조언카드":
     st.markdown("## 🗣 오늘의 조언 카드")
     card, direction = st.session_state.cards[0]
@@ -155,7 +152,6 @@ elif st.session_state.mode == "조언카드":
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-# 양자택일
 elif st.session_state.mode == "양자택일":
     st.markdown("## 🔀 양자택일 카드")
     if len(st.session_state.cards) < 2:
