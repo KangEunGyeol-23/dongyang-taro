@@ -76,28 +76,35 @@ if st.session_state.mode is None:
             st.session_state.extra_cards = [None]
             st.session_state.mode = "조언카드"
 
+# 카드 표시 함수
+def show_card(card, direction, width=250):
+    img = Image.open(os.path.join(img_folder, card))
+    if direction == "역방향":
+        img = img.rotate(180)
+    st.image(img, caption=f"{card} ({direction})", width=width)
+
 # 3카드 보기
 elif st.session_state.mode == "3카드":
     st.markdown("## 🃏 3장의 카드")
     cols = st.columns(3)
     for i, (card, direction) in enumerate(st.session_state.cards):
         with cols[i]:
-            img = Image.open(os.path.join(img_folder, card))
-            if direction == "역방향":
-                img = img.rotate(180)
-            st.image(img, caption=f"{card} ({direction})", use_container_width=True)
+            show_card(card, direction)
 
-            if direction == "역방향" and st.session_state.extra_cards[i] is None:
+    col_buttons = st.columns(3)
+    for i, (card, direction) in enumerate(st.session_state.cards):
+        if direction == "역방향" and st.session_state.extra_cards[i] is None:
+            with col_buttons[i]:
                 if st.button(f"🔁 보조카드 ({i+1})"):
                     st.session_state.extra_cards[i] = draw_cards(1)[0]
 
-            if st.session_state.extra_cards[i] is not None:
-                extra_card, extra_dir = st.session_state.extra_cards[i]
+    col_extras = st.columns(3)
+    for i in range(3):
+        if st.session_state.extra_cards[i] is not None:
+            extra_card, extra_dir = st.session_state.extra_cards[i]
+            with col_extras[i]:
                 st.markdown("**→ 보조카드**")
-                extra_img = Image.open(os.path.join(img_folder, extra_card))
-                if extra_dir == "역방향":
-                    extra_img = extra_img.rotate(180)
-                st.image(extra_img, caption=f"{extra_card} ({extra_dir})", use_container_width=True)
+                show_card(extra_card, extra_dir)
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
@@ -105,10 +112,7 @@ elif st.session_state.mode == "3카드":
 elif st.session_state.mode == "원카드":
     st.markdown("## 🃏 한 장의 카드")
     card, direction = st.session_state.cards[0]
-    img = Image.open(os.path.join(img_folder, card))
-    if direction == "역방향":
-        img = img.rotate(180)
-    st.image(img, caption=f"{card} ({direction})", use_container_width=True)
+    show_card(card, direction)
 
     if direction == "역방향" and st.session_state.extra_cards[0] is None:
         if st.button("🔁 보조카드"):
@@ -116,10 +120,8 @@ elif st.session_state.mode == "원카드":
 
     if st.session_state.extra_cards[0] is not None:
         extra_card, extra_dir = st.session_state.extra_cards[0]
-        extra_img = Image.open(os.path.join(img_folder, extra_card))
-        if extra_dir == "역방향":
-            extra_img = extra_img.rotate(180)
-        st.image(extra_img, caption=f"{extra_card} ({extra_dir})", use_container_width=True)
+        st.markdown("**→ 보조카드**")
+        show_card(extra_card, extra_dir)
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
@@ -127,10 +129,7 @@ elif st.session_state.mode == "원카드":
 elif st.session_state.mode == "조언카드":
     st.markdown("## 🗣 오늘의 조언 카드")
     card, direction = st.session_state.cards[0]
-    img = Image.open(os.path.join(img_folder, card))
-    if direction == "역방향":
-        img = img.rotate(180)
-    st.image(img, caption=f"{card} ({direction})", use_container_width=True)
+    show_card(card, direction)
 
     if direction == "역방향" and st.session_state.extra_cards[0] is None:
         if st.button("🔁 보조카드"):
@@ -138,10 +137,8 @@ elif st.session_state.mode == "조언카드":
 
     if st.session_state.extra_cards[0] is not None:
         extra_card, extra_dir = st.session_state.extra_cards[0]
-        extra_img = Image.open(os.path.join(img_folder, extra_card))
-        if extra_dir == "역방향":
-            extra_img = extra_img.rotate(180)
-        st.image(extra_img, caption=f"{extra_card} ({extra_dir})", use_container_width=True)
+        st.markdown("**→ 보조카드**")
+        show_card(extra_card, extra_dir)
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
@@ -154,9 +151,6 @@ elif st.session_state.mode == "양자택일":
     cols = st.columns(2)
     for i, (card, direction) in enumerate(st.session_state.cards):
         with cols[i]:
-            img = Image.open(os.path.join(img_folder, card))
-            if direction == "역방향":
-                img = img.rotate(180)
-            st.image(img, caption=f"선택 {i+1}: {card} ({direction})", use_container_width=True)
+            show_card(card, direction)
 
     st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
