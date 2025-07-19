@@ -4,7 +4,7 @@ import os
 import random
 
 # ✅ 로그인 허용 이메일 목록
-ALLOWED_USERS = ["cotty79@naver.com"]
+ALLOWED_USERS = ["abc@example.com", "test@naver.com", "gyeol@domain.com"]
 
 # ✅ 로그인 처리
 if "user" not in st.session_state:
@@ -14,7 +14,7 @@ if "user" not in st.session_state:
         if email in ALLOWED_USERS:
             st.session_state.user = email
             st.success(f"{email} 님 환영합니다.")
-            st.rerun()  # 최신 버전용으로 수정
+            st.experimental_rerun()
         else:
             st.error("접근 권한이 없습니다.")
     st.stop()
