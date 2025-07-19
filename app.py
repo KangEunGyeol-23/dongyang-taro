@@ -30,6 +30,8 @@ if 'extra_cards' not in st.session_state:
     st.session_state.extra_cards = []
 if 'advice_card' not in st.session_state:
     st.session_state.advice_card = None
+if 'question' not in st.session_state:
+    st.session_state.question = ""
 
 img_folder = "카드이미지"
 
@@ -154,6 +156,9 @@ elif st.session_state.mode == "조언카드":
 
 elif st.session_state.mode == "양자택일":
     st.markdown("## 🔀 양자택일 카드")
+
+    st.session_state.question = st.text_input("당신의 질문을 입력하세요:", value=st.session_state.question)
+
     if len(st.session_state.cards) < 2:
         st.session_state.cards = draw_cards(2)
 
