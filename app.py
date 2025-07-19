@@ -4,7 +4,7 @@ import os
 import random
 
 # ✅ 허용된 이메일 목록
-ALLOWED_USERS = ["cotty79@naver.com"]
+ALLOWED_USERS = ["cotty79@naver.com", "teleecho@naver.com"]
 
 # ✅ 로그인 처리
 if "user" not in st.session_state:
