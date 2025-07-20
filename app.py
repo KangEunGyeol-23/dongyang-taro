@@ -175,5 +175,4 @@ if st.session_state.user in ALLOWED_USERS:
     if rerun_needed:
         st.rerun()
 
-    # 이하 모드별 기능은 동일하게 유지
-    # ... (생략된 기존 카드 뽑기 및 해석 UI 처리 코드 유지)
+    # ✅ 여기에 모드별 결과 출력 코드 삽입 필요 (예: 3카드, 원카드, 조언카드 등)
