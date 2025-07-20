@@ -46,6 +46,12 @@ if "subcards" not in st.session_state:
 if "subcard_used" not in st.session_state:
     st.session_state.subcard_used = {}
 
+# 초기화 버튼
+if st.button("🏠 처음으로"):
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.experimental_rerun()
+
 # 로그인
 st.title("🌓 동양타로")
 st.markdown("\"한 장의 카드가 내 마음을 말하다\"")
