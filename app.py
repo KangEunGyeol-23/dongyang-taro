@@ -93,18 +93,27 @@ if st.session_state.user == "cotty23":
             정 = st.text_area("✅ 정방향 해석 입력", value=data.get("정방향", ""))
             역 = st.text_area("⛔ 역방향 해석 입력", value=data.get("역방향", ""))
             tip = st.text_area("📌 조언 메시지", value=data.get("조언", ""))
-            if st.button("💾 수정 저장"):
-                card_meanings[selected_existing] = {
-                    "이미지설명": desc,
-                    "의미요약": summary,
-                    "정방향": 정,
-                    "역방향": 역,
-                    "조언": tip
-                }
-                with open("card_meanings.json", "w", encoding="utf-8") as f:
-                    json.dump(card_meanings, f, ensure_ascii=False, indent=2)
-                st.success(f"'{selected_existing}' 해석이 수정되었습니다.")
-                st.rerun()
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("💾 수정 저장"):
+                    card_meanings[selected_existing] = {
+                        "이미지설명": desc,
+                        "의미요약": summary,
+                        "정방향": 정,
+                        "역방향": 역,
+                        "조언": tip
+                    }
+                    with open("card_meanings.json", "w", encoding="utf-8") as f:
+                        json.dump(card_meanings, f, ensure_ascii=False, indent=2)
+                    st.success(f"'{selected_existing}' 해석이 수정되었습니다.")
+                    st.rerun()
+            with col2:
+                if st.button("🗑️ 삭제"):
+                    del card_meanings[selected_existing]
+                    with open("card_meanings.json", "w", encoding="utf-8") as f:
+                        json.dump(card_meanings, f, ensure_ascii=False, indent=2)
+                    st.success(f"'{selected_existing}' 해석이 삭제되었습니다.")
+                    st.rerun()
 
         unregistered = [fname for fname in all_cards if fname not in card_meanings]
         if unregistered:
