@@ -112,7 +112,6 @@ if user_id:
                 for i, (file, direction) in enumerate(st.session_state.cards):
                     with cols[i]:
                         st.image(os.path.join(CARD_FOLDER, file), width=200)
-                        st.markdown(f"**{direction}**")
                         st.markdown(get_card_meaning(card_data, file, direction))
 
                         if direction == "역방향" and file not in st.session_state.subcard_used:
@@ -135,7 +134,6 @@ if user_id:
             if "card" in st.session_state:
                 file, direction = st.session_state.card
                 st.image(os.path.join(CARD_FOLDER, file), width=300)
-                st.markdown(f"**{direction}**")
                 st.markdown(get_card_meaning(card_data, file, direction))
 
                 if direction == "역방향" and file not in st.session_state.subcard_used:
@@ -158,7 +156,6 @@ if user_id:
             if "adv_card" in st.session_state:
                 file, direction = st.session_state.adv_card
                 st.image(os.path.join(CARD_FOLDER, file), width=300)
-                st.markdown(f"**{direction}**")
                 st.markdown(get_card_meaning(card_data, file, direction))
 
                 if direction == "역방향" and file not in st.session_state.subcard_used:
@@ -186,7 +183,7 @@ if user_id:
                 for i, (file, direction) in enumerate(st.session_state.choice_cards):
                     with cols[i]:
                         st.image(os.path.join(CARD_FOLDER, file), width=200)
-                        st.markdown(f"**선택{i+1} - {direction}**")
+                        st.markdown(f"**선택{i+1}**")
                         st.markdown(f"질문: {q1 if i == 0 else q2}")
                         st.markdown(get_card_meaning(card_data, file, direction))
 
@@ -194,9 +191,9 @@ if user_id:
                 if st.button("🧭 최종 결론 카드 보기"):
                     st.session_state.final_choice = draw_cards(1)[0]
 
-            if "final_choice" in st.session_state:
+            if "final_choice" in st.session_state and st.session_state.final_choice:
                 file, direction = st.session_state.final_choice
                 st.markdown("---")
-                st.markdown(f"### 🏁 최종 결론 카드 ({direction})")
+                st.markdown(f"### 🏁 최종 결론 카드")
                 st.image(os.path.join(CARD_FOLDER, file), width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
