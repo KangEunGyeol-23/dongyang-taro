@@ -159,6 +159,7 @@ if st.session_state.user != "cotty23":
     with col3:
         if st.button("🔀 양자택일"):
             st.session_state.cards = []
+            st.session_state.extra_cards = [None, None]
             st.session_state.question_yes = ""
             st.session_state.question_no = ""
             st.session_state.mode = "양자택일"
@@ -203,6 +204,18 @@ elif mode == "원카드":
     card, direction = st.session_state.cards[0]
     show_card(card, direction)
     st.markdown(interpret_result(card, direction))
+
+    if direction == "역방향" and st.session_state.extra_cards[0] is None:
+        if st.button("🔁 보조카드"):
+            st.session_state.extra_cards[0] = draw_cards(1)[0]
+            st.rerun()
+
+    if st.session_state.extra_cards[0] is not None:
+        extra_card, extra_dir = st.session_state.extra_cards[0]
+        st.markdown("**→ 보조카드**")
+        show_card(extra_card, extra_dir)
+        st.markdown(interpret_result(extra_card, extra_dir))
+
     save_result("원카드", [st.session_state.cards[0]])
     download_history()
     if st.button("처음으로 ⭯"):
@@ -214,6 +227,18 @@ elif mode == "조언카드":
     card, direction = st.session_state.cards[0]
     show_card(card, direction)
     st.markdown(interpret_result(card, direction))
+
+    if direction == "역방향" and st.session_state.extra_cards[0] is None:
+        if st.button("🔁 보조카드"):
+            st.session_state.extra_cards[0] = draw_cards(1)[0]
+            st.rerun()
+
+    if st.session_state.extra_cards[0] is not None:
+        extra_card, extra_dir = st.session_state.extra_cards[0]
+        st.markdown("**→ 보조카드**")
+        show_card(extra_card, extra_dir)
+        st.markdown(interpret_result(extra_card, extra_dir))
+
     save_result("조언카드", [st.session_state.cards[0]])
     download_history()
     if st.button("처음으로 ⭯"):
@@ -227,6 +252,7 @@ elif mode == "양자택일":
 
     if st.button("카드 보기"):
         st.session_state.cards = draw_cards(2)
+        st.session_state.extra_cards = [None, None]
         st.rerun()
 
     if st.session_state.cards:
@@ -237,6 +263,20 @@ elif mode == "양자택일":
                 st.markdown(f"#### {label} - {st.session_state.question_yes if i == 0 else st.session_state.question_no}")
                 show_card(card, direction)
                 st.markdown(interpret_result(card, direction))
+                if direction == "역방향" and st.session_state.extra_cards[i] is None:
+                    if st.button(f"🔁 보조카드 ({label})"):
+                        st.session_state.extra_cards[i] = draw_cards(1)[0]
+                        st.rerun()
+
+        col_extras = st.columns(2)
+        for i in range(2):
+            if st.session_state.extra_cards[i] is not None:
+                extra_card, extra_dir = st.session_state.extra_cards[i]
+                with col_extras[i]:
+                    st.markdown("**→ 보조카드**")
+                    show_card(extra_card, extra_dir)
+                    st.markdown(interpret_result(extra_card, extra_dir))
+
         save_result("양자택일", st.session_state.cards)
         download_history()
         if st.button("처음으로 ⭯"):
