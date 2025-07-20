@@ -101,6 +101,13 @@ if user_id:
         mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
         card_data = load_card_data()
 
+        def show_card(file, direction, width=200):
+            img_path = os.path.join(CARD_FOLDER, file)
+            img = Image.open(img_path)
+            if direction == "역방향":
+                img = img.rotate(180)
+            st.image(img, width=width)
+
         if mode == "3카드 보기":
             if st.button("🔮 3장 뽑기"):
                 st.session_state.cards = draw_cards(3)
@@ -111,7 +118,7 @@ if user_id:
                 cols = st.columns(3)
                 for i, (file, direction) in enumerate(st.session_state.cards):
                     with cols[i]:
-                        st.image(os.path.join(CARD_FOLDER, file), width=200)
+                        show_card(file, direction)
                         st.markdown(get_card_meaning(card_data, file, direction))
 
                         if direction == "역방향" and file not in st.session_state.subcard_used:
@@ -122,7 +129,7 @@ if user_id:
 
                         if file in st.session_state.subcards:
                             sub_file, sub_dir = st.session_state.subcards[file]
-                            st.image(os.path.join(CARD_FOLDER, sub_file), caption=f"보조카드: {sub_dir}", width=150)
+                            show_card(sub_file, sub_dir, width=150)
                             st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
         elif mode == "원카드":
@@ -133,7 +140,7 @@ if user_id:
 
             if "card" in st.session_state:
                 file, direction = st.session_state.card
-                st.image(os.path.join(CARD_FOLDER, file), width=300)
+                show_card(file, direction, width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
 
                 if direction == "역방향" and file not in st.session_state.subcard_used:
@@ -144,7 +151,7 @@ if user_id:
 
                 if file in st.session_state.subcards:
                     sub_file, sub_dir = st.session_state.subcards[file]
-                    st.image(os.path.join(CARD_FOLDER, sub_file), caption=f"보조카드: {sub_dir}", width=200)
+                    show_card(sub_file, sub_dir, width=200)
                     st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
         elif mode == "조언카드":
@@ -155,7 +162,7 @@ if user_id:
 
             if "adv_card" in st.session_state:
                 file, direction = st.session_state.adv_card
-                st.image(os.path.join(CARD_FOLDER, file), width=300)
+                show_card(file, direction, width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
 
                 if direction == "역방향" and file not in st.session_state.subcard_used:
@@ -166,7 +173,7 @@ if user_id:
 
                 if file in st.session_state.subcards:
                     sub_file, sub_dir = st.session_state.subcards[file]
-                    st.image(os.path.join(CARD_FOLDER, sub_file), caption=f"보조카드: {sub_dir}", width=200)
+                    show_card(sub_file, sub_dir, width=200)
                     st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
         elif mode == "양자택일":
@@ -176,24 +183,24 @@ if user_id:
             if q1 and q2:
                 if st.button("🔍 선택별 카드 뽑기"):
                     st.session_state.choice_cards = draw_cards(2)
-                    st.session_state.final_choice = None
+                    st.session_state.final_choice_card = None
 
             if "choice_cards" in st.session_state:
                 cols = st.columns(2)
                 for i, (file, direction) in enumerate(st.session_state.choice_cards):
                     with cols[i]:
-                        st.image(os.path.join(CARD_FOLDER, file), width=200)
+                        show_card(file, direction, width=200)
                         st.markdown(f"**선택{i+1}**")
                         st.markdown(f"질문: {q1 if i == 0 else q2}")
                         st.markdown(get_card_meaning(card_data, file, direction))
 
             if q1 and q2:
                 if st.button("🧭 최종 결론 카드 보기"):
-                    st.session_state.final_choice = draw_cards(1)[0]
+                    st.session_state.final_choice_card = draw_cards(1)[0]
 
-            if "final_choice" in st.session_state and st.session_state.final_choice:
-                file, direction = st.session_state.final_choice
+            if "final_choice_card" in st.session_state and st.session_state.final_choice_card:
+                file, direction = st.session_state.final_choice_card
                 st.markdown("---")
                 st.markdown(f"### 🏁 최종 결론 카드")
-                st.image(os.path.join(CARD_FOLDER, file), width=300)
+                show_card(file, direction, width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
