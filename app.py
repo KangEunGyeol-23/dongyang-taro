@@ -9,6 +9,9 @@ from datetime import datetime
 # ✅ 허용된 이메일 목록
 ALLOWED_USERS = ["cotty23", "teleecho", "cotty00"]
 
+# ✅ 관리자 ID
+ADMIN_ID = "cotty23"
+
 # ✅ 카드 해석 딕셔너리 (초기값)
 card_meanings = {}
 
@@ -81,7 +84,7 @@ def download_history():
         st.download_button("📥 결과 다운로드 (CSV)", data=csv, file_name="타로_기록.csv", mime="text/csv")
 
 # ✅ 관리자 모드
-if st.session_state.user == "cotty23":
+if st.session_state.user == ADMIN_ID:
     with st.expander("🛠 관리자 전용: 카드 해석 등록 및 관리"):
         all_cards = load_cards()
         selected_existing = st.selectbox("📁 등록된 카드 선택 (수정 또는 확인)", ["선택 안함"] + list(card_meanings.keys()))
@@ -145,4 +148,4 @@ if st.session_state.user == "cotty23":
         csv = df.to_csv(index=False).encode("utf-8-sig")
         st.download_button("📄 전체 카드 해석 CSV 다운로드", data=csv, file_name="card_meanings.csv", mime="text/csv")
 
-# 사용자 모드 이하 동일 (생략 가능)
+# ➤ 사용자 기능은 별도 파일 또는 다음 셀에서 분리 구현 (app mode)
