@@ -173,9 +173,11 @@ if st.session_state.user in ALLOWED_USERS:
     # ✅ 모드별 결과 처리
     if st.session_state.mode == "3카드":
         st.subheader("🔮 3카드 결과")
+        cols = st.columns(3)
         for i, (card, direction) in enumerate(st.session_state.cards):
-            show_card(card, direction)
-            st.markdown(interpret_result(card, direction))
+            with cols[i]:
+                show_card(card, direction)
+                st.markdown(interpret_result(card, direction))
 
     elif st.session_state.mode == "원카드":
         st.subheader("✨ 원카드 결과")
@@ -201,15 +203,17 @@ if st.session_state.user in ALLOWED_USERS:
                 st.session_state.extra_cards = [None, None]
 
         if st.session_state.cards:
-            st.markdown(f"### 선택 1: {st.session_state.question_yes}")
-            card1, dir1 = st.session_state.cards[0]
-            show_card(card1, dir1)
-            st.markdown(interpret_result(card1, dir1))
-
-            st.markdown(f"### 선택 2: {st.session_state.question_no}")
-            card2, dir2 = st.session_state.cards[1]
-            show_card(card2, dir2)
-            st.markdown(interpret_result(card2, dir2))
+            cols = st.columns(2)
+            with cols[0]:
+                st.markdown(f"### 선택 1: {st.session_state.question_yes}")
+                card1, dir1 = st.session_state.cards[0]
+                show_card(card1, dir1)
+                st.markdown(interpret_result(card1, dir1))
+            with cols[1]:
+                st.markdown(f"### 선택 2: {st.session_state.question_no}")
+                card2, dir2 = st.session_state.cards[1]
+                show_card(card2, dir2)
+                st.markdown(interpret_result(card2, dir2))
 
             if st.button("✅ 최종 결론 카드 보기"):
                 final_card = draw_cards(1)[0]
