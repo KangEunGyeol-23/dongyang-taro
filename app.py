@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 
 # ✅ 허용된 이메일 목록
-ALLOWED_USERS = ["cotty79@naver.com", "teleecho@naver.com"]
+ALLOWED_USERS = ["cotty23", "teleecho", "cotty00"]
 
 # ✅ 카드 해석 딕셔너리 (초기값)
 card_meanings = {}
@@ -20,7 +20,7 @@ if os.path.exists("card_meanings.json"):
 # ✅ 로그인 처리
 if "user" not in st.session_state:
     st.markdown("## 🔐 로그인")
-    email = st.text_input("이메일을 입력하세요")
+    email = st.text_input("아이디를 입력하세요")
     if st.button("로그인"):
         if email in ALLOWED_USERS:
             st.session_state.user = email
@@ -73,7 +73,7 @@ def download_history():
         st.download_button("📥 결과 다운로드 (CSV)", data=csv, file_name="타로_기록.csv", mime="text/csv")
 
 # ✅ 관리자 모드
-if st.session_state.user == "cotty79@naver.com":
+if st.session_state.user == "cotty23":
     with st.expander("🛠 관리자 전용: 카드 해석 등록 및 관리"):
         def get_unregistered_cards():
             return [fname for fname in load_cards() if fname not in card_meanings]
