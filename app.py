@@ -126,6 +126,8 @@ if st.session_state.user in ALLOWED_USERS:
             st.session_state.cards = draw_cards(2)
             st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
+            st.session_state.question_yes = ""
+            st.session_state.question_no = ""
             rerun_needed = True
     with col4:
         if st.button("🗣 오늘의 조언"):
@@ -142,16 +144,22 @@ if st.session_state.user in ALLOWED_USERS:
     # ✅ 양자택일 결과 + 최종 결론 카드
     if st.session_state.mode == "양자택일" and len(st.session_state.cards) == 2:
         st.subheader("🔀 양자택일 결과")
+
+        st.session_state.question_yes = st.text_input("선택 1 질문", value=st.session_state.question_yes)
+        st.session_state.question_no = st.text_input("선택 2 질문", value=st.session_state.question_no)
+
         col1, col2 = st.columns(2)
         for i, col in enumerate([col1, col2]):
             with col:
                 card, direction = st.session_state.cards[i]
-                label = "선택 1" if i == 0 else "선택 2"
+                label = f"선택 1: {st.session_state.question_yes}" if i == 0 else f"선택 2: {st.session_state.question_no}"
                 st.markdown(f"**{label}**")
                 show_card(card, direction)
                 st.markdown(interpret_result(card, direction))
+
         if st.button("✅ 최종 결론 카드 보기"):
             st.session_state.advice_card = draw_cards(1)[0]
+
         if st.session_state.advice_card:
             st.subheader("📌 최종 결론 카드")
             final_card, final_dir = st.session_state.advice_card
