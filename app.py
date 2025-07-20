@@ -186,7 +186,8 @@ if user_id:
                 for i, (file, direction) in enumerate(st.session_state.choice_cards):
                     with cols[i]:
                         st.image(os.path.join(CARD_FOLDER, file), width=200)
-                        st.markdown(f"**{['선택1', '선택2'][i]} - {direction}**")
+                        st.markdown(f"**선택{i+1} - {direction}**")
+                        st.markdown(f"질문: {q1 if i == 0 else q2}")
                         st.markdown(get_card_meaning(card_data, file, direction))
 
             if q1 and q2:
