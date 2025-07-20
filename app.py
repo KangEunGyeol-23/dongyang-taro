@@ -103,9 +103,39 @@ if st.session_state.user in ALLOWED_USERS:
     st.markdown("<p style='text-align:center;'>\"한 장의 카드가 내 마음을 말하다\"</p>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # ✅ 관리자 메시지
+    # ✅ 관리자 메시지 및 기능 노출
     if st.session_state.user == ADMIN_ID:
         st.success("🛠️ 관리자님 반갑습니다.")
+        with st.expander("📂 카드 설명 등록/삭제"):
+            selected_card = st.selectbox("카드 이미지 파일 선택", load_cards())
+            img = Image.open(os.path.join(img_folder, selected_card))
+            st.image(img, caption=selected_card, width=200)
+
+            with st.form("add_meaning_form"):
+                desc = st.text_area("🖼️ 이미지 설명")
+                summary = st.text_area("🧭 카드 의미 요약")
+                meaning_upright = st.text_area("🟢 정방향 해석")
+                meaning_reversed = st.text_area("🔴 역방향 해석")
+                advice = st.text_area("📝 조언 메시지")
+                submitted = st.form_submit_button("✅ 등록/수정")
+                if submitted:
+                    card_meanings[selected_card] = {
+                        "이미지설명": desc,
+                        "의미요약": summary,
+                        "정방향": meaning_upright,
+                        "역방향": meaning_reversed,
+                        "조언": advice
+                    }
+                    with open("card_meanings.json", "w", encoding="utf-8") as f:
+                        json.dump(card_meanings, f, ensure_ascii=False, indent=2)
+                    st.success("카드 설명이 저장되었습니다.")
+
+            if selected_card in card_meanings:
+                if st.button("❌ 이 카드의 설명 삭제"):
+                    del card_meanings[selected_card]
+                    with open("card_meanings.json", "w", encoding="utf-8") as f:
+                        json.dump(card_meanings, f, ensure_ascii=False, indent=2)
+                    st.success("해당 카드의 해석이 삭제되었습니다.")
 
     rerun_needed = False
 
