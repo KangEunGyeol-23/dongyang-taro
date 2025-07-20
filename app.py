@@ -96,71 +96,6 @@ def download_history():
         csv = df.to_csv(index=False).encode('utf-8-sig')
         st.download_button("📥 결과 다운로드 (CSV)", data=csv, file_name="타로_기록.csv", mime="text/csv")
 
-# ✅ 관리자 모드
-if st.session_state.user == ADMIN_ID:
-    with st.expander("🛠 관리자 전용: 카드 해석 등록 및 관리"):
-        all_cards = load_cards()
-        selected_existing = st.selectbox("📁 등록된 카드 선택 (수정 또는 확인)", ["선택 안함"] + list(card_meanings.keys()))
-
-        if selected_existing != "선택 안함":
-            data = card_meanings.get(selected_existing, {})
-            desc = st.text_area("🖼️ 이미지 설명", value=data.get("이미지설명", ""))
-            summary = st.text_area("🧭 카드 의미 요약", value=data.get("의미요약", ""))
-            정 = st.text_area("✅ 정방향 해석 입력", value=data.get("정방향", ""))
-            역 = st.text_area("⛔ 역방향 해석 입력", value=data.get("역방향", ""))
-            tip = st.text_area("📌 조언 메시지", value=data.get("조언", ""))
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("💾 수정 저장"):
-                    card_meanings[selected_existing] = {
-                        "이미지설명": desc,
-                        "의미요약": summary,
-                        "정방향": 정,
-                        "역방향": 역,
-                        "조언": tip
-                    }
-                    with open("card_meanings.json", "w", encoding="utf-8") as f:
-                        json.dump(card_meanings, f, ensure_ascii=False, indent=2)
-                    st.success(f"'{selected_existing}' 해석이 수정되었습니다.")
-                    st.rerun()
-            with col2:
-                if st.button("🗑️ 삭제"):
-                    del card_meanings[selected_existing]
-                    with open("card_meanings.json", "w", encoding="utf-8") as f:
-                        json.dump(card_meanings, f, ensure_ascii=False, indent=2)
-                    st.success(f"'{selected_existing}' 해석이 삭제되었습니다.")
-                    st.rerun()
-
-        unregistered = [fname for fname in all_cards if fname not in card_meanings]
-        if unregistered:
-            st.markdown("---")
-            st.markdown("## 📌 신규 카드 해석 등록")
-            selected_card = st.selectbox("🃏 해석이 등록되지 않은 카드 선택", unregistered)
-            desc = st.text_area("🖼️ 이미지 설명", key="desc_new")
-            summary = st.text_area("🧭 카드 의미 요약", key="summary_new")
-            정 = st.text_area("✅ 정방향 해석 입력", key="정_new")
-            역 = st.text_area("⛔ 역방향 해석 입력", key="역_new")
-            tip = st.text_area("📌 조언 메시지", key="tip_new")
-            if st.button("💾 해석 저장"):
-                card_meanings[selected_card] = {
-                    "이미지설명": desc,
-                    "의미요약": summary,
-                    "정방향": 정,
-                    "역방향": 역,
-                    "조언": tip
-                }
-                with open("card_meanings.json", "w", encoding="utf-8") as f:
-                    json.dump(card_meanings, f, ensure_ascii=False, indent=2)
-                st.success(f"'{selected_card}' 해석이 저장되었습니다.")
-                st.rerun()
-
-        df = pd.DataFrame([
-            {"카드": k, "정방향": v.get("정방향", ""), "역방향": v.get("역방향", ""), "조언": v.get("조언", "")}
-            for k, v in card_meanings.items()
-        ])
-        csv = df.to_csv(index=False).encode("utf-8-sig")
-        st.download_button("📄 전체 카드 해석 CSV 다운로드", data=csv, file_name="card_meanings.csv", mime="text/csv")
-
 # ✅ 사용자 모드 (관리자 포함)
 if st.session_state.user in ALLOWED_USERS:
     st.markdown("---")
@@ -188,7 +123,7 @@ if st.session_state.user in ALLOWED_USERS:
     col3, col4 = st.columns(2)
     with col3:
         if st.button("🔀 양자택일"):
-            st.session_state.cards = []
+            st.session_state.cards = draw_cards(2)
             st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
             rerun_needed = True
@@ -203,3 +138,22 @@ if st.session_state.user in ALLOWED_USERS:
 
     if rerun_needed:
         st.rerun()
+
+    # ✅ 양자택일 결과 + 최종 결론 카드
+    if st.session_state.mode == "양자택일" and len(st.session_state.cards) == 2:
+        st.subheader("🔀 양자택일 결과")
+        col1, col2 = st.columns(2)
+        for i, col in enumerate([col1, col2]):
+            with col:
+                card, direction = st.session_state.cards[i]
+                label = "선택 1" if i == 0 else "선택 2"
+                st.markdown(f"**{label}**")
+                show_card(card, direction)
+                st.markdown(interpret_result(card, direction))
+        if st.button("✅ 최종 결론 카드 보기"):
+            st.session_state.advice_card = draw_cards(1)[0]
+        if st.session_state.advice_card:
+            st.subheader("📌 최종 결론 카드")
+            final_card, final_dir = st.session_state.advice_card
+            show_card(final_card, final_dir)
+            st.markdown(interpret_result(final_card, final_dir))
