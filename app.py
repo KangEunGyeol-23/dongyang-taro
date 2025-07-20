@@ -143,9 +143,25 @@ if mode == "3카드":
         with cols[i]:
             show_card(card, direction)
             st.markdown(interpret_result(card, direction))
+            if direction == "역방향" and st.session_state.extra_cards[i] is None:
+                if st.button(f"🔁 보조카드 ({i+1})"):
+                    st.session_state.extra_cards[i] = draw_cards(1)[0]
+                    st.rerun()
+
+    col_extras = st.columns(3)
+    for i in range(3):
+        if st.session_state.extra_cards[i] is not None:
+            extra_card, extra_dir = st.session_state.extra_cards[i]
+            with col_extras[i]:
+                st.markdown("**→ 보조카드**")
+                show_card(extra_card, extra_dir)
+                st.markdown(interpret_result(extra_card, extra_dir))
+
     save_result("3카드", st.session_state.cards)
     download_history()
     if st.button("처음으로 ⭯"):
+        st.session_state.mode = None
+        st.rerun()
         st.session_state.mode = None
         st.rerun()
 
