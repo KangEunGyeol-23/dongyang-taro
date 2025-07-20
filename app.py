@@ -167,25 +167,19 @@ if user_id:
                     st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
         elif mode == "양자택일":
-            st.text_input("선택1 질문 입력", key="q1")
-            st.text_input("선택2 질문 입력", key="q2")
+            q1 = st.text_input("선택1 질문 입력", key="q1")
+            q2 = st.text_input("선택2 질문 입력", key="q2")
 
-            if st.button("🔍 선택 비교"):
-                st.session_state.choice1 = draw_cards(1)[0]
-                st.session_state.choice2 = draw_cards(1)[0]
+            if q1 and q2:
+                if st.button("🧭 최종 결론 카드 보기"):
+                    st.session_state.final_choice = draw_cards(1)[0]
+                    st.session_state.subcards = {}
+                    st.session_state.subcard_used = {}
 
-            if "choice1" in st.session_state and "choice2" in st.session_state:
-                cols = st.columns(2)
-                with cols[0]:
-                    st.markdown(f"### 선택1: {st.session_state.q1}")
-                    file1, dir1 = st.session_state.choice1
-                    st.image(os.path.join(CARD_FOLDER, file1), width=250)
-                    st.markdown(f"**{dir1}**")
-                    st.markdown(get_card_meaning(card_data, file1, dir1))
-
-                with cols[1]:
-                    st.markdown(f"### 선택2: {st.session_state.q2}")
-                    file2, dir2 = st.session_state.choice2
-                    st.image(os.path.join(CARD_FOLDER, file2), width=250)
-                    st.markdown(f"**{dir2}**")
-                    st.markdown(get_card_meaning(card_data, file2, dir2))
+            if "final_choice" in st.session_state:
+                file, direction = st.session_state.final_choice
+                st.markdown(f"### 선택1: {q1}")
+                st.markdown(f"### 선택2: {q2}")
+                st.image(os.path.join(CARD_FOLDER, file), width=300)
+                st.markdown(f"**최종 결론 카드 ({direction})**")
+                st.markdown(get_card_meaning(card_data, file, direction))
