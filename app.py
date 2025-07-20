@@ -62,35 +62,35 @@ def show_card(card, direction, width=200):
 # 메인화면
 if st.session_state.mode is None:
     st.markdown("---")
-    st.markdown("<h2 style='text-align:center;'>\ud83c\udf17 \ub3d9\uc591\ud0c0\ub85c</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center;'>\"\ud55c \uc7a5\uc758 \uce74\ub4dc\uac00 \ub0b4 \ub9d0\uc744 \ub9d0\ud558\ub2e4\"</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center;'>🌗 동양타로</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>\"한 장의 카드가 내 마음을 말하다\"</p>", unsafe_allow_html=True)
     st.markdown("---")
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("\ud83d\udd2e 3\uce74\ub4dc \ubcf4\uae30"):
+        if st.button("🔮 3카드 보기"):
             st.session_state.cards = draw_cards(3)
             st.session_state.extra_cards = [None, None, None]
             st.session_state.advice_card = None
-            st.session_state.mode = "3\uce74\ub4dc"
+            st.session_state.mode = "3카드"
     with col2:
-        if st.button("\u2728 \uc6d0\uce74\ub4dc"):
+        if st.button("✨ 원카드"):
             st.session_state.cards = draw_cards(1)
             st.session_state.extra_cards = [None]
-            st.session_state.mode = "\uc6d0\uce74\ub4dc"
+            st.session_state.mode = "원카드"
 
     col3, col4 = st.columns(2)
     with col3:
-        if st.button("\ud83d\udd00 \uc591\uc790\ud0dd\uc77c"):
-            st.session_state.mode = "\uc591\uc790\ud0dd\uc77c"
+        if st.button("🔀 양자택일"):
+            st.session_state.mode = "양자택일"
     with col4:
-        if st.button("\ud83d\udd23 \uc624\ub298\uc758 \uc870\uc5b8"):
+        if st.button("🗣 오늘의 조언"):
             st.session_state.cards = draw_cards(1)
             st.session_state.extra_cards = [None]
-            st.session_state.mode = "\uc870\uc5b8\uce74\ub4dc"
+            st.session_state.mode = "조언카드"
 
-elif st.session_state.mode == "3\uce74\ub4dc":
-    st.markdown("## \ud83c\udccf 3\uc7a5\uc758 \uce74\ub4dc")
+elif st.session_state.mode == "3카드":
+    st.markdown("## 🃏 3장의 카드")
     cols = st.columns(3)
     for i, (card, direction) in enumerate(st.session_state.cards):
         with cols[i]:
@@ -98,9 +98,9 @@ elif st.session_state.mode == "3\uce74\ub4dc":
 
     col_buttons = st.columns(3)
     for i, (card, direction) in enumerate(st.session_state.cards):
-        if direction == "\uc5ed\ubc29\ud5a5" and st.session_state.extra_cards[i] is None:
+        if direction == "역방향" and st.session_state.extra_cards[i] is None:
             with col_buttons[i]:
-                if st.button(f"\ud83d\udd01 \ubcf4\uc870\uce74\ub4dc ({i+1})"):
+                if st.button(f"🔁 보조카드 ({i+1})"):
                     st.session_state.extra_cards[i] = draw_cards(1)[0]
 
     col_extras = st.columns(3)
@@ -108,69 +108,69 @@ elif st.session_state.mode == "3\uce74\ub4dc":
         if st.session_state.extra_cards[i] is not None:
             extra_card, extra_dir = st.session_state.extra_cards[i]
             with col_extras[i]:
-                st.markdown("**\u2192 \ubcf4\uc870\uce74\ub4dc**")
+                st.markdown("**→ 보조카드**")
                 show_card(extra_card, extra_dir)
 
     st.markdown("---")
     if st.session_state.advice_card is None:
-        if st.button("\ud83d\udd23 \uc870\uc5b8 \uce74\ub4dc \ubcf4\uae30"):
+        if st.button("🗣 조언 카드 보기"):
             st.session_state.advice_card = draw_cards(1)[0]
 
     if st.session_state.advice_card:
         advice_card, advice_dir = st.session_state.advice_card
-        st.markdown("### \ud83d\udca1 \uc870\uc5b8 \uce74\ub4dc")
+        st.markdown("### 💡 조언 카드")
         show_card(advice_card, advice_dir)
 
-    st.button("\ucc98\uc74c\uc73c\ub85c \u2baf", on_click=lambda: st.session_state.update(mode=None))
+    st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-elif st.session_state.mode == "\uc6d0\uce74\ub4dc":
-    st.markdown("## \ud83c\udccf \ud55c \uc7a5\uc758 \uce74\ub4dc")
+elif st.session_state.mode == "원카드":
+    st.markdown("## 🃏 한 장의 카드")
     card, direction = st.session_state.cards[0]
     show_card(card, direction)
 
-    if direction == "\uc5ed\ubc29\ud5a5" and st.session_state.extra_cards[0] is None:
-        if st.button("\ud83d\udd01 \ubcf4\uc870\uce74\ub4dc"):
+    if direction == "역방향" and st.session_state.extra_cards[0] is None:
+        if st.button("🔁 보조카드"):
             st.session_state.extra_cards[0] = draw_cards(1)[0]
 
     if st.session_state.extra_cards[0] is not None:
         extra_card, extra_dir = st.session_state.extra_cards[0]
-        st.markdown("**\u2192 \ubcf4\uc870\uce74\ub4dc**")
+        st.markdown("**→ 보조카드**")
         show_card(extra_card, extra_dir)
 
-    st.button("\ucc98\uc74c\uc73c\ub85c \u2baf", on_click=lambda: st.session_state.update(mode=None))
+    st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-elif st.session_state.mode == "\uc870\uc5b8\uce74\ub4dc":
-    st.markdown("## \ud83d\udd23 \uc624\ub298\uc758 \uc870\uc5b8 \uce74\ub4dc")
+elif st.session_state.mode == "조언카드":
+    st.markdown("## 🗣 오늘의 조언 카드")
     card, direction = st.session_state.cards[0]
     show_card(card, direction)
 
-    if direction == "\uc5ed\ubc29\ud5a5" and st.session_state.extra_cards[0] is None:
-        if st.button("\ud83d\udd01 \ubcf4\uc870\uce74\ub4dc"):
+    if direction == "역방향" and st.session_state.extra_cards[0] is None:
+        if st.button("🔁 보조카드"):
             st.session_state.extra_cards[0] = draw_cards(1)[0]
 
     if st.session_state.extra_cards[0] is not None:
         extra_card, extra_dir = st.session_state.extra_cards[0]
-        st.markdown("**\u2192 \ubcf4\uc870\uce74\ub4dc**")
+        st.markdown("**→ 보조카드**")
         show_card(extra_card, extra_dir)
 
-    st.button("\ucc98\uc74c\uc73c\ub85c \u2baf", on_click=lambda: st.session_state.update(mode=None))
+    st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
 
-elif st.session_state.mode == "\uc591\uc790\ud0dd\uc77c":
-    st.markdown("## \ud83d\udd00 \uc591\uc790\ud0dd\uc77c \uce74\ub4dc")
+elif st.session_state.mode == "양자택일":
+    st.markdown("## 🔀 양자택일 카드")
 
-    st.session_state.question_yes = st.text_input("Yes\uc5d0 \ud574\ub2f9\ud558\ub294 \uc9c8\ubb38\uc744 \uc785\ub825\ud558\uc138\uc694:", value=st.session_state.question_yes)
-    st.session_state.question_no = st.text_input("No\uc5d0 \ud574\ub2f9\ud558\ub294 \uc9c8\ubb38\uc744 \uc785\ub825\ud558\uc138\uc694:", value=st.session_state.question_no)
+    st.session_state.question_yes = st.text_input("Yes에 해당하는 질문을 입력하세요:", value=st.session_state.question_yes)
+    st.session_state.question_no = st.text_input("No에 해당하는 질문을 입력하세요:", value=st.session_state.question_no)
 
     if len(st.session_state.cards) < 2:
-        if st.button("\ud83d\udd2e \uce74\ub4dc \ubcf4\uae30"):
+        if st.button("🔮 카드 보기"):
             st.session_state.cards = draw_cards(2)
             st.rerun()
 
     def interpret_result(direction):
         if direction == "정방향":
-            return "\ud83c\udf3f \uac00\ub2a5\uc131\uc774 \ub192\uc2b5\ub2c8\ub2e4. \uc9c4\ud589\uc744 \uace0\ub824\ud574\ubcf4\uc138\uc694."
+            return "🌿 가능성이 높습니다. 진행을 고려해보세요."
         else:
-            return "\u26a0\ufe0f \uc544\uc9c1\uc740 \uc2dc\uae30\uc0c1\uc870\uc77c \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc2e0\uc911\ud788 \ud310\ub2e8\ud558\uc138\uc694."
+            return "⚠️ 아직은 시기상조일 수 있습니다. 신중히 판단하세요."
 
     if len(st.session_state.cards) == 2:
         cols = st.columns(2)
@@ -183,4 +183,4 @@ elif st.session_state.mode == "\uc591\uc790\ud0dd\uc77c":
                 interpretation = interpret_result(direction)
                 st.markdown(f"**{interpretation}**")
 
-    st.button("\ucc98\uc74c\uc73c\ub85c \u2baf", on_click=lambda: st.session_state.update(mode=None))
+    st.button("처음으로 ⭯", on_click=lambda: st.session_state.update(mode=None))
