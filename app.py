@@ -137,42 +137,82 @@ if st.session_state.user in ALLOWED_USERS:
                         json.dump(card_meanings, f, ensure_ascii=False, indent=2)
                     st.success("해당 카드의 해석이 삭제되었습니다.")
 
-    rerun_needed = False
+    # ✅ 메뉴 버튼들 - 폼 기반
+    with st.form("menu_form"):
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            start_3card = st.form_submit_button("🔮 3카드 보기")
+        with col2:
+            start_onecard = st.form_submit_button("✨ 원카드")
+        with col3:
+            start_choice = st.form_submit_button("🔀 양자택일")
+        with col4:
+            start_advice = st.form_submit_button("🗣 오늘의 조언")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔮 3카드 보기"):
+        if start_3card:
             st.session_state.cards = draw_cards(3)
             st.session_state.extra_cards = [None, None, None]
-            st.session_state.advice_card = None
             st.session_state.mode = "3카드"
-            rerun_needed = True
-    with col2:
-        if st.button("✨ 원카드"):
+        elif start_onecard:
             st.session_state.cards = draw_cards(1)
             st.session_state.extra_cards = [None]
             st.session_state.mode = "원카드"
-            rerun_needed = True
-
-    col3, col4 = st.columns(2)
-    with col3:
-        if st.button("🔀 양자택일"):
+        elif start_choice:
             st.session_state.cards = []
             st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
             st.session_state.question_yes = ""
             st.session_state.question_no = ""
-            rerun_needed = True
-    with col4:
-        if st.button("🗣 오늘의 조언"):
+        elif start_advice:
             st.session_state.cards = draw_cards(1)
             st.session_state.extra_cards = [None]
             st.session_state.mode = "조언카드"
-            rerun_needed = True
 
     download_history()
 
-    if rerun_needed:
-        st.rerun()
+    # ✅ 모드별 결과 처리
+    if st.session_state.mode == "3카드":
+        st.subheader("🔮 3카드 결과")
+        for i, (card, direction) in enumerate(st.session_state.cards):
+            show_card(card, direction)
+            st.markdown(interpret_result(card, direction))
 
-    # ✅ 여기에 모드별 결과 출력 코드 삽입 필요 (예: 3카드, 원카드, 조언카드 등)
+    elif st.session_state.mode == "원카드":
+        st.subheader("✨ 원카드 결과")
+        card, direction = st.session_state.cards[0]
+        show_card(card, direction)
+        st.markdown(interpret_result(card, direction))
+
+    elif st.session_state.mode == "조언카드":
+        st.subheader("🗣 오늘의 조언 결과")
+        card, direction = st.session_state.cards[0]
+        show_card(card, direction)
+        st.markdown(interpret_result(card, direction))
+
+    elif st.session_state.mode == "양자택일":
+        st.subheader("🔀 양자택일")
+        with st.form("choice_form"):
+            st.session_state.question_yes = st.text_input("선택 1 질문 입력 (예: 계속 다닐까?)", st.session_state.question_yes)
+            st.session_state.question_no = st.text_input("선택 2 질문 입력 (예: 이직할까?)", st.session_state.question_no)
+            submit_questions = st.form_submit_button("🃏 카드 뽑기")
+
+            if submit_questions and st.session_state.question_yes and st.session_state.question_no:
+                st.session_state.cards = draw_cards(2)
+                st.session_state.extra_cards = [None, None]
+
+        if st.session_state.cards:
+            st.markdown(f"### 선택 1: {st.session_state.question_yes}")
+            card1, dir1 = st.session_state.cards[0]
+            show_card(card1, dir1)
+            st.markdown(interpret_result(card1, dir1))
+
+            st.markdown(f"### 선택 2: {st.session_state.question_no}")
+            card2, dir2 = st.session_state.cards[1]
+            show_card(card2, dir2)
+            st.markdown(interpret_result(card2, dir2))
+
+            if st.button("✅ 최종 결론 카드 보기"):
+                final_card = draw_cards(1)[0]
+                st.markdown("### 🧭 최종 결론")
+                show_card(final_card[0], final_card[1])
+                st.markdown(interpret_result(final_card[0], final_card[1]))
