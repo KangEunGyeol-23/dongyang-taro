@@ -99,6 +99,97 @@ if st.session_state.user == "cotty23":
         csv = df.to_csv(index=False).encode("utf-8-sig")
         st.download_button("📄 전체 카드 해석 CSV 다운로드", data=csv, file_name="card_meanings.csv", mime="text/csv")
 
-# 🔮 앱 본문 시작
-# (기존 카드 모드: 3카드, 원카드, 양자택일 등은 이전 구조 그대로 유지)
-# 각 카드 출력 후 interpret_result(card, direction) 함수로 해석 출력
+# 🔮 사용자 모드 (타로 뽑기 UI)
+if st.session_state.user != "cotty23":
+    st.markdown("---")
+    st.markdown("<h2 style='text-align:center;'>🌗 동양타로</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>\"한 장의 카드가 내 마음을 말하다\"</p>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔮 3카드 보기"):
+            st.session_state.cards = draw_cards(3)
+            st.session_state.extra_cards = [None] * 3
+            st.session_state.mode = "3카드"
+            st.rerun()
+    with col2:
+        if st.button("✨ 원카드"):
+            st.session_state.cards = draw_cards(1)
+            st.session_state.extra_cards = [None]
+            st.session_state.mode = "원카드"
+            st.rerun()
+
+    col3, col4 = st.columns(2)
+    with col3:
+        if st.button("🔀 양자택일"):
+            st.session_state.cards = []
+            st.session_state.question_yes = ""
+            st.session_state.question_no = ""
+            st.session_state.mode = "양자택일"
+            st.rerun()
+    with col4:
+        if st.button("🗣 오늘의 조언"):
+            st.session_state.cards = draw_cards(1)
+            st.session_state.extra_cards = [None]
+            st.session_state.mode = "조언카드"
+            st.rerun()
+
+mode = st.session_state.mode
+if mode == "3카드":
+    st.markdown("## 🃏 3장의 카드")
+    cols = st.columns(3)
+    for i, (card, direction) in enumerate(st.session_state.cards):
+        with cols[i]:
+            show_card(card, direction)
+            st.markdown(interpret_result(card, direction))
+    save_result("3카드", st.session_state.cards)
+    download_history()
+    if st.button("처음으로 ⭯"):
+        st.session_state.mode = None
+        st.rerun()
+
+elif mode == "원카드":
+    st.markdown("## 🃏 한 장의 카드")
+    card, direction = st.session_state.cards[0]
+    show_card(card, direction)
+    st.markdown(interpret_result(card, direction))
+    save_result("원카드", [st.session_state.cards[0]])
+    download_history()
+    if st.button("처음으로 ⭯"):
+        st.session_state.mode = None
+        st.rerun()
+
+elif mode == "조언카드":
+    st.markdown("## 🗣 오늘의 조언 카드")
+    card, direction = st.session_state.cards[0]
+    show_card(card, direction)
+    st.markdown(interpret_result(card, direction))
+    save_result("조언카드", [st.session_state.cards[0]])
+    download_history()
+    if st.button("처음으로 ⭯"):
+        st.session_state.mode = None
+        st.rerun()
+
+elif mode == "양자택일":
+    st.markdown("## 🔀 양자택일 카드")
+    st.session_state.question_yes = st.text_input("Yes에 해당하는 질문:", value=st.session_state.question_yes)
+    st.session_state.question_no = st.text_input("No에 해당하는 질문:", value=st.session_state.question_no)
+
+    if st.button("카드 보기"):
+        st.session_state.cards = draw_cards(2)
+        st.rerun()
+
+    if st.session_state.cards:
+        cols = st.columns(2)
+        for i, (card, direction) in enumerate(st.session_state.cards):
+            label = "Yes" if i == 0 else "No"
+            with cols[i]:
+                st.markdown(f"#### {label} - {st.session_state.question_yes if i == 0 else st.session_state.question_no}")
+                show_card(card, direction)
+                st.markdown(interpret_result(card, direction))
+        save_result("양자택일", st.session_state.cards)
+        download_history()
+        if st.button("처음으로 ⭯"):
+            st.session_state.mode = None
+            st.rerun()
