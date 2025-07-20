@@ -75,6 +75,11 @@ if user_id:
         st.session_state.login = user_id_temp
         st.rerun()
 
+    # --- 사용자 메인 기능 ---
+    st.header("🃏 일반 사용자 모드")
+    st.markdown("이곳에 일반 사용자 기능(3카드/원카드/양자택일 등)을 넣을 수 있습니다.")
+    # 일반 기능을 여기에 삽입할 수 있도록 영역 확보
+
     # --- 관리자 모드 ---
     if is_admin:
         st.subheader("🛠️ 관리자 전용: 카드 해석 등록 및 관리")
@@ -87,44 +92,54 @@ if user_id:
         tab1, tab2 = st.tabs(["카드 등록", "등록된 카드 관리"])
 
         with tab1:
-            selected_file = st.selectbox("📋 해석이 등록되지 않은 카드 선택", unregistered_files)
-            image_desc = st.text_area("🖼️ 이미지 설명 입력")
-            summary = st.text_area("🧭 카드 요약 입력")
-            upright = st.text_area("✅ 정방향 해석 입력")
-            reversed_ = st.text_area("⛔ 역방향 해석 입력")
-            advice = st.text_area("📝 조언 입력")
+            if unregistered_files:
+                selected_file = st.selectbox("📋 해석이 등록되지 않은 카드 선택", unregistered_files)
+                image_desc = st.text_area("🖼️ 이미지 설명 입력")
+                summary = st.text_area("🧭 카드 요약 입력")
+                upright = st.text_area("✅ 정방향 해석 입력")
+                reversed_ = st.text_area("⛔ 역방향 해석 입력")
+                advice = st.text_area("📝 조언 입력")
 
-            if st.button("💾 해석 저장"):
-                card_data = card_data.append({
-                    "filename": selected_file,
-                    "image_desc": image_desc,
-                    "summary": summary,
-                    "upright": upright,
-                    "reversed": reversed_,
-                    "advice": advice
-                }, ignore_index=True)
-                save_card_data(card_data)
-                st.success("해석이 저장되었습니다.")
+                if st.button("💾 해석 저장"):
+                    card_data = card_data.append({
+                        "filename": selected_file,
+                        "image_desc": image_desc,
+                        "summary": summary,
+                        "upright": upright,
+                        "reversed": reversed_,
+                        "advice": advice
+                    }, ignore_index=True)
+                    save_card_data(card_data)
+                    st.success("해석이 저장되었습니다.")
+            else:
+                st.info("모든 카드가 이미 등록되어 있습니다.")
 
         with tab2:
-            edit_file = st.selectbox("✏️ 등록된 카드 선택", registered_files)
-            row = card_data[card_data["filename"] == edit_file].iloc[0]
-            image_desc = st.text_area("🖼️ 이미지 설명 입력", row['image_desc'])
-            summary = st.text_area("🧭 카드 요약 입력", row['summary'])
-            upright = st.text_area("✅ 정방향 해석 입력", row['upright'])
-            reversed_ = st.text_area("⛔ 역방향 해석 입력", row['reversed'])
-            advice = st.text_area("📝 조언 입력", row['advice'])
+            if registered_files:
+                edit_file = st.selectbox("✏️ 등록된 카드 선택", registered_files)
+                row_data = card_data[card_data["filename"] == edit_file]
+                if not row_data.empty:
+                    row = row_data.iloc[0]
+                    image_desc = st.text_area("🖼️ 이미지 설명 입력", row['image_desc'])
+                    summary = st.text_area("🧭 카드 요약 입력", row['summary'])
+                    upright = st.text_area("✅ 정방향 해석 입력", row['upright'])
+                    reversed_ = st.text_area("⛔ 역방향 해석 입력", row['reversed'])
+                    advice = st.text_area("📝 조언 입력", row['advice'])
 
-            if st.button("💾 수정 저장"):
-                card_data.loc[card_data["filename"] == edit_file, ["image_desc", "summary", "upright", "reversed", "advice"]] = \
-                    image_desc, summary, upright, reversed_, advice
-                save_card_data(card_data)
-                st.success("수정이 저장되었습니다.")
+                    if st.button("💾 수정 저장"):
+                        card_data.loc[card_data["filename"] == edit_file, ["image_desc", "summary", "upright", "reversed", "advice"]] = \
+                            image_desc, summary, upright, reversed_, advice
+                        save_card_data(card_data)
+                        st.success("수정이 저장되었습니다.")
 
-            if st.button("🗑️ 카드 삭제"):
-                card_data = card_data[card_data["filename"] != edit_file]
-                save_card_data(card_data)
-                st.success("카드 해석이 삭제되었습니다.")
+                    if st.button("🗑️ 카드 삭제"):
+                        card_data = card_data[card_data["filename"] != edit_file]
+                        save_card_data(card_data)
+                        st.success("카드 해석이 삭제되었습니다.")
+                else:
+                    st.warning("선택한 카드의 데이터가 존재하지 않습니다.")
+            else:
+                st.info("등록된 카드가 없습니다.")
 
         if st.button("🗂 전체 카드 해석 CSV 다운로드"):
             csv = card_data.to_csv(index=False).encode('utf-8-sig')
