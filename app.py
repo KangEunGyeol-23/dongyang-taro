@@ -123,7 +123,7 @@ if st.session_state.user in ALLOWED_USERS:
     col3, col4 = st.columns(2)
     with col3:
         if st.button("🔀 양자택일"):
-            st.session_state.cards = draw_cards(2)
+            st.session_state.cards = []  # draw_cards 제거
             st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
             st.session_state.question_yes = ""
@@ -142,26 +142,31 @@ if st.session_state.user in ALLOWED_USERS:
         st.rerun()
 
     # ✅ 양자택일 결과 + 최종 결론 카드
-    if st.session_state.mode == "양자택일" and len(st.session_state.cards) == 2:
-        st.subheader("🔀 양자택일 결과")
+    if st.session_state.mode == "양자택일":
+        st.subheader("🔀 양자택일 질문 입력")
 
         st.session_state.question_yes = st.text_input("선택 1 질문", value=st.session_state.question_yes)
         st.session_state.question_no = st.text_input("선택 2 질문", value=st.session_state.question_no)
 
-        col1, col2 = st.columns(2)
-        for i, col in enumerate([col1, col2]):
-            with col:
-                card, direction = st.session_state.cards[i]
-                label = f"선택 1: {st.session_state.question_yes}" if i == 0 else f"선택 2: {st.session_state.question_no}"
-                st.markdown(f"**{label}**")
-                show_card(card, direction)
-                st.markdown(interpret_result(card, direction))
+        if st.button("🃏 카드 뽑기"):
+            st.session_state.cards = draw_cards(2)
+            st.rerun()
 
-        if st.button("✅ 최종 결론 카드 보기"):
-            st.session_state.advice_card = draw_cards(1)[0]
+        if len(st.session_state.cards) == 2:
+            col1, col2 = st.columns(2)
+            for i, col in enumerate([col1, col2]):
+                with col:
+                    card, direction = st.session_state.cards[i]
+                    label = f"선택 1: {st.session_state.question_yes}" if i == 0 else f"선택 2: {st.session_state.question_no}"
+                    st.markdown(f"**{label}**")
+                    show_card(card, direction)
+                    st.markdown(interpret_result(card, direction))
 
-        if st.session_state.advice_card:
-            st.subheader("📌 최종 결론 카드")
-            final_card, final_dir = st.session_state.advice_card
-            show_card(final_card, final_dir)
-            st.markdown(interpret_result(final_card, final_dir))
+            if st.button("✅ 최종 결론 카드 보기"):
+                st.session_state.advice_card = draw_cards(1)[0]
+
+            if st.session_state.advice_card:
+                st.subheader("📌 최종 결론 카드")
+                final_card, final_dir = st.session_state.advice_card
+                show_card(final_card, final_dir)
+                st.markdown(interpret_result(final_card, final_dir))
