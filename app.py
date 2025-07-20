@@ -59,7 +59,14 @@ def show_card(card, direction, width=200):
     st.image(img, caption=f"{card} ({direction})", width=width)
 
 def interpret_result(card_name, direction):
-    return card_meanings.get(card_name, {}).get(direction, "💬 이 카드에 대한 해석이 준비 중입니다.")
+    result = card_meanings.get(card_name, {})
+    parts = []
+    if "이미지설명" in result:
+        parts.append(f"🖼️ {result['이미지설명']}")
+    if "의미요약" in result:
+        parts.append(f"🧭 {result['의미요약']}")
+    parts.append(result.get(direction, "💬 이 카드에 대한 해석이 준비 중입니다."))
+    return "\n\n".join(parts)
 
 def save_result(title, card_data):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -83,17 +90,45 @@ if st.session_state.user == "cotty23":
             st.success("✅ 모든 카드에 해석이 등록되어 있습니다.")
         else:
             selected_card = st.selectbox("🃏 해석이 등록되지 않은 카드 선택", unregistered)
+            st.markdown("""
+                ✅ 카드 설명 구성 형식 (예시 기준)
+
+                👔 동양타로 카드: [카드명]
+
+                🖼️ 이미지 설명 (시각적 키워드)
+
+                🧭 카드 의미 요약
+
+                🟢 정방향 해석 (앱 표시용)
+                - 💬 요약 메시지
+                - 항목 정리 (• ...)
+
+                🔴 역방향 해석 (앱 표시용)
+                - 💬 요약 메시지
+                - 항목 정리 (• ...)
+
+                📌 조언 메시지
+            """)
+            desc = st.text_area("🖼️ 이미지 설명")
+            summary = st.text_area("🧭 카드 의미 요약")
             정 = st.text_area("✅ 정방향 해석 입력")
             역 = st.text_area("⛔ 역방향 해석 입력")
+            tip = st.text_area("📌 조언 메시지")
             if st.button("💾 해석 저장"):
-                card_meanings[selected_card] = {"정방향": 정, "역방향": 역}
+                card_meanings[selected_card] = {
+                    "이미지설명": desc,
+                    "의미요약": summary,
+                    "정방향": 정,
+                    "역방향": 역,
+                    "조언": tip
+                }
                 with open("card_meanings.json", "w", encoding="utf-8") as f:
                     json.dump(card_meanings, f, ensure_ascii=False, indent=2)
                 st.success(f"'{selected_card}' 해석이 저장되었습니다.")
                 st.rerun()
 
         df = pd.DataFrame([
-            {"카드": k, "정방향": v.get("정방향", ""), "역방향": v.get("역방향", "")}
+            {"카드": k, "정방향": v.get("정방향", ""), "역방향": v.get("역방향", ""), "조언": v.get("조언", "")}
             for k, v in card_meanings.items()
         ])
         csv = df.to_csv(index=False).encode("utf-8-sig")
@@ -160,8 +195,6 @@ if mode == "3카드":
     save_result("3카드", st.session_state.cards)
     download_history()
     if st.button("처음으로 ⭯"):
-        st.session_state.mode = None
-        st.rerun()
         st.session_state.mode = None
         st.rerun()
 
