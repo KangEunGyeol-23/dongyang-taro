@@ -44,6 +44,10 @@ def get_card_meaning(df, filename, direction):
         return "\n\n".join(meaning)
     return "등록된 해석이 없습니다."
 
+# 보조 카드 버튼 표시 조건
+def show_subcard_button(card_key, direction):
+    return direction == "역방향" and not st.session_state.subcard_used.get(card_key, False)
+
 if "subcards" not in st.session_state:
     st.session_state.subcards = {}
 
@@ -76,44 +80,67 @@ if user_id:
         st.rerun()
 
     # --- 사용자 메인 기능 ---
-    st.header("🃏 일반 사용자 모드")
-    st.markdown("이곳에 일반 사용자 기능(3카드/원카드/양자택일 등)을 넣을 수 있습니다.")
+    if is_user:
+        st.header("🃏 일반 사용자 모드")
+        mode = st.radio("모드 선택", ["3카드", "원카드", "조언카드", "양자택일"])
 
-    mode = st.radio("모드 선택", ["3카드", "원카드", "양자택일"])
+        if mode in ["3카드", "원카드", "조언카드"]:
+            num_cards = 3 if mode == "3카드" else 1
+            if st.button(f"{mode} 뽑기"):
+                cards = draw_cards(num_cards)
+                cols = st.columns(num_cards)
+                for i, (filename, direction) in enumerate(cards):
+                    with cols[i]:
+                        card_path = os.path.join(CARD_FOLDER, filename)
+                        image = Image.open(card_path)
+                        if direction == "역방향":
+                            image = image.rotate(180)
+                        st.image(image, caption=f"카드 {i+1}", width=200)
+                        st.markdown(get_card_meaning(load_card_data(), filename, direction))
 
-    if mode == "3카드":
-        if st.button("3카드 뽑기"):
-            cards = draw_cards(3)
-            for i, (filename, direction) in enumerate(cards, 1):
-                st.image(os.path.join(CARD_FOLDER, filename), width=200)
+                        card_key = f"{mode}_{i}"
+                        if show_subcard_button(card_key, direction):
+                            if st.button(f"🔄 보조 카드 보기 ({i+1})"):
+                                sub_filename, sub_direction = draw_cards(1)[0]
+                                st.session_state.subcards[card_key] = (sub_filename, sub_direction)
+                                st.session_state.subcard_used[card_key] = True
+
+                        if card_key in st.session_state.subcards:
+                            sub_filename, sub_direction = st.session_state.subcards[card_key]
+                            sub_image = Image.open(os.path.join(CARD_FOLDER, sub_filename))
+                            if sub_direction == "역방향":
+                                sub_image = sub_image.rotate(180)
+                            st.image(sub_image, caption=f"보조 카드 ({sub_direction})", width=150)
+                            st.markdown(get_card_meaning(load_card_data(), sub_filename, sub_direction))
+
+        elif mode == "양자택일":
+            col1, col2 = st.columns(2)
+            with col1:
+                q1 = st.text_input("선택1 질문")
+            with col2:
+                q2 = st.text_input("선택2 질문")
+
+            if st.button("선택별 카드 뽑기"):
+                cards = draw_cards(2)
+                cols = st.columns(2)
+                for i, (filename, direction) in enumerate(cards):
+                    with cols[i]:
+                        image = Image.open(os.path.join(CARD_FOLDER, filename))
+                        if direction == "역방향":
+                            image = image.rotate(180)
+                        st.image(image, width=250)
+                        question = q1 if i == 0 else q2
+                        st.markdown(f"**질문: {question}**")
+                        st.markdown(get_card_meaning(load_card_data(), filename, direction))
+
+            if st.button("최종 결론 카드 보기"):
+                filename, direction = draw_cards(1)[0]
+                image = Image.open(os.path.join(CARD_FOLDER, filename))
+                if direction == "역방향":
+                    image = image.rotate(180)
+                st.image(image, width=250)
+                st.markdown("**최종 결론 카드**")
                 st.markdown(get_card_meaning(load_card_data(), filename, direction))
-
-    elif mode == "원카드":
-        if st.button("원카드 뽑기"):
-            filename, direction = draw_cards(1)[0]
-            st.image(os.path.join(CARD_FOLDER, filename), width=300)
-            st.markdown(get_card_meaning(load_card_data(), filename, direction))
-
-    elif mode == "양자택일":
-        col1, col2 = st.columns(2)
-        with col1:
-            q1 = st.text_input("선택1 질문")
-        with col2:
-            q2 = st.text_input("선택2 질문")
-
-        if st.button("선택별 카드 뽑기"):
-            cards = draw_cards(2)
-            for i, (filename, direction) in enumerate(cards, 1):
-                st.image(os.path.join(CARD_FOLDER, filename), width=250)
-                question = q1 if i == 1 else q2
-                st.markdown(f"**질문: {question}**")
-                st.markdown(get_card_meaning(load_card_data(), filename, direction))
-
-        if st.button("최종 결론 카드 보기"):
-            filename, direction = draw_cards(1)[0]
-            st.image(os.path.join(CARD_FOLDER, filename), width=250)
-            st.markdown("**최종 결론 카드**")
-            st.markdown(get_card_meaning(load_card_data(), filename, direction))
 
     # --- 관리자 모드 ---
     if is_admin:
