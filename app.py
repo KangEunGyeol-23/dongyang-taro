@@ -50,7 +50,11 @@ if "subcard_used" not in st.session_state:
 st.title("🌓 동양타로")
 st.markdown("\"한 장의 카드가 내 마음을 말하다\"")
 
-user_id = st.text_input("아이디를 입력하세요", key="login")
+if "login" not in st.session_state:
+    st.session_state.login = ""
+
+user_id = st.text_input("아이디를 입력하세요", value=st.session_state.login)
+st.session_state.login = user_id
 
 if user_id:
     is_admin = user_id in ADMIN_IDS
@@ -63,7 +67,9 @@ if user_id:
     st.success(f"{user_id}님 환영합니다.")
 
     if st.button("🏠 처음으로"):
+        user_id_temp = user_id
         st.session_state.clear()
+        st.session_state.login = user_id_temp
         st.rerun()
 
     # --- 관리자 모드 ---
