@@ -29,6 +29,8 @@ if "user" not in st.session_state:
         footer {visibility: hidden;}
         header {visibility: hidden;}
         .stApp { overflow-x: hidden; }
+        button[title="View source"] {visibility: hidden;}
+        .stDeployButton {display: none;}
         </style>
     """
     st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -200,4 +202,4 @@ if st.session_state.user in ALLOWED_USERS:
     download_history()
 
     if rerun_needed:
-        st.experimental_rerun()
+        st.rerun()
