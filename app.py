@@ -159,8 +159,8 @@ if st.session_state.user == ADMIN_ID:
         csv = df.to_csv(index=False).encode("utf-8-sig")
         st.download_button("📄 전체 카드 해석 CSV 다운로드", data=csv, file_name="card_meanings.csv", mime="text/csv")
 
-# ✅ 일반 사용자 메인화면
-if st.session_state.user != ADMIN_ID and st.session_state.mode == "":
+# ✅ 사용자 모드 (관리자 포함)
+if st.session_state.user in ALLOWED_USERS:
     st.markdown("---")
     st.markdown("<h2 style='text-align:center;'>🌗 동양타로</h2>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;'>\"한 장의 카드가 내 마음을 말하다\"</p>", unsafe_allow_html=True)
@@ -171,6 +171,7 @@ if st.session_state.user != ADMIN_ID and st.session_state.mode == "":
         if st.button("🔮 3카드 보기"):
             st.session_state.cards = draw_cards(3)
             st.session_state.extra_cards = [None, None, None]
+            st.session_state.advice_card = None
             st.session_state.mode = "3카드"
     with col2:
         if st.button("✨ 원카드"):
@@ -182,7 +183,6 @@ if st.session_state.user != ADMIN_ID and st.session_state.mode == "":
     with col3:
         if st.button("🔀 양자택일"):
             st.session_state.cards = []
-            st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
     with col4:
         if st.button("🗣 오늘의 조언"):
@@ -190,4 +190,7 @@ if st.session_state.user != ADMIN_ID and st.session_state.mode == "":
             st.session_state.extra_cards = [None]
             st.session_state.mode = "조언카드"
 
-    st.markdown("")
+    download_history()
+
+    if st.session_state.mode:
+        st.experimental_rerun()
