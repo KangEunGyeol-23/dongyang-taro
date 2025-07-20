@@ -171,15 +171,25 @@ if user_id:
             q2 = st.text_input("선택2 질문 입력", key="q2")
 
             if q1 and q2:
+                if st.button("🔍 선택별 카드 뽑기"):
+                    st.session_state.choice_cards = draw_cards(2)
+                    st.session_state.final_choice = None
+
+            if "choice_cards" in st.session_state:
+                cols = st.columns(2)
+                for i, (file, direction) in enumerate(st.session_state.choice_cards):
+                    with cols[i]:
+                        st.image(os.path.join(CARD_FOLDER, file), width=200)
+                        st.markdown(f"**{['선택1', '선택2'][i]} - {direction}**")
+                        st.markdown(get_card_meaning(card_data, file, direction))
+
+            if q1 and q2:
                 if st.button("🧭 최종 결론 카드 보기"):
                     st.session_state.final_choice = draw_cards(1)[0]
-                    st.session_state.subcards = {}
-                    st.session_state.subcard_used = {}
 
             if "final_choice" in st.session_state:
                 file, direction = st.session_state.final_choice
-                st.markdown(f"### 선택1: {q1}")
-                st.markdown(f"### 선택2: {q2}")
+                st.markdown("---")
+                st.markdown(f"### 🏁 최종 결론 카드 ({direction})")
                 st.image(os.path.join(CARD_FOLDER, file), width=300)
-                st.markdown(f"**최종 결론 카드 ({direction})**")
                 st.markdown(get_card_meaning(card_data, file, direction))
