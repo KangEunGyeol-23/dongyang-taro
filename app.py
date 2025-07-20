@@ -123,7 +123,7 @@ if st.session_state.user in ALLOWED_USERS:
     col3, col4 = st.columns(2)
     with col3:
         if st.button("🔀 양자택일"):
-            st.session_state.cards = []  # draw_cards 제거
+            st.session_state.cards = []
             st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
             st.session_state.question_yes = ""
@@ -141,7 +141,6 @@ if st.session_state.user in ALLOWED_USERS:
     if rerun_needed:
         st.rerun()
 
-    # ✅ 양자택일 결과 + 최종 결론 카드
     if st.session_state.mode == "양자택일":
         st.subheader("🔀 양자택일 질문 입력")
 
@@ -170,3 +169,73 @@ if st.session_state.user in ALLOWED_USERS:
                 final_card, final_dir = st.session_state.advice_card
                 show_card(final_card, final_dir)
                 st.markdown(interpret_result(final_card, final_dir))
+
+    elif st.session_state.mode == "3카드" and len(st.session_state.cards) == 3:
+        st.subheader("🃏 3장의 카드")
+        cols = st.columns(3)
+        for i, (card, direction) in enumerate(st.session_state.cards):
+            with cols[i]:
+                show_card(card, direction)
+                st.markdown(interpret_result(card, direction))
+
+        col_buttons = st.columns(3)
+        for i, (card, direction) in enumerate(st.session_state.cards):
+            if direction == "역방향" and st.session_state.extra_cards[i] is None:
+                with col_buttons[i]:
+                    if st.button(f"🔁 보조카드 ({i+1})"):
+                        st.session_state.extra_cards[i] = draw_cards(1)[0]
+                        st.rerun()
+
+        col_extras = st.columns(3)
+        for i in range(3):
+            if st.session_state.extra_cards[i]:
+                extra_card, extra_dir = st.session_state.extra_cards[i]
+                with col_extras[i]:
+                    st.markdown("→ 보조카드")
+                    show_card(extra_card, extra_dir)
+                    st.markdown(interpret_result(extra_card, extra_dir))
+
+        if st.session_state.advice_card is None:
+            if st.button("🗣 조언 카드 보기"):
+                st.session_state.advice_card = draw_cards(1)[0]
+                st.rerun()
+
+        if st.session_state.advice_card:
+            st.subheader("💡 조언 카드")
+            advice_card, advice_dir = st.session_state.advice_card
+            show_card(advice_card, advice_dir)
+            st.markdown(interpret_result(advice_card, advice_dir))
+
+    elif st.session_state.mode == "원카드" and len(st.session_state.cards) == 1:
+        st.subheader("✨ 한 장의 카드")
+        card, direction = st.session_state.cards[0]
+        show_card(card, direction)
+        st.markdown(interpret_result(card, direction))
+
+        if direction == "역방향" and st.session_state.extra_cards[0] is None:
+            if st.button("🔁 보조카드"):
+                st.session_state.extra_cards[0] = draw_cards(1)[0]
+                st.rerun()
+
+        if st.session_state.extra_cards[0]:
+            extra_card, extra_dir = st.session_state.extra_cards[0]
+            st.markdown("→ 보조카드")
+            show_card(extra_card, extra_dir)
+            st.markdown(interpret_result(extra_card, extra_dir))
+
+    elif st.session_state.mode == "조언카드" and len(st.session_state.cards) == 1:
+        st.subheader("🗣 오늘의 조언")
+        card, direction = st.session_state.cards[0]
+        show_card(card, direction)
+        st.markdown(interpret_result(card, direction))
+
+        if direction == "역방향" and st.session_state.extra_cards[0] is None:
+            if st.button("🔁 보조카드"):
+                st.session_state.extra_cards[0] = draw_cards(1)[0]
+                st.rerun()
+
+        if st.session_state.extra_cards[0]:
+            extra_card, extra_dir = st.session_state.extra_cards[0]
+            st.markdown("→ 보조카드")
+            show_card(extra_card, extra_dir)
+            st.markdown(interpret_result(extra_card, extra_dir))
