@@ -166,6 +166,8 @@ if st.session_state.user in ALLOWED_USERS:
     st.markdown("<p style='text-align:center;'>\"한 장의 카드가 내 마음을 말하다\"</p>", unsafe_allow_html=True)
     st.markdown("---")
 
+    rerun_needed = False
+
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🔮 3카드 보기"):
@@ -173,24 +175,29 @@ if st.session_state.user in ALLOWED_USERS:
             st.session_state.extra_cards = [None, None, None]
             st.session_state.advice_card = None
             st.session_state.mode = "3카드"
+            rerun_needed = True
     with col2:
         if st.button("✨ 원카드"):
             st.session_state.cards = draw_cards(1)
             st.session_state.extra_cards = [None]
             st.session_state.mode = "원카드"
+            rerun_needed = True
 
     col3, col4 = st.columns(2)
     with col3:
         if st.button("🔀 양자택일"):
             st.session_state.cards = []
+            st.session_state.extra_cards = [None, None]
             st.session_state.mode = "양자택일"
+            rerun_needed = True
     with col4:
         if st.button("🗣 오늘의 조언"):
             st.session_state.cards = draw_cards(1)
             st.session_state.extra_cards = [None]
             st.session_state.mode = "조언카드"
+            rerun_needed = True
 
     download_history()
 
-    if st.session_state.mode:
+    if rerun_needed:
         st.experimental_rerun()
