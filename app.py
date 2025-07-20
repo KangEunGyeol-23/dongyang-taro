@@ -6,22 +6,33 @@ import pandas as pd
 import json
 from datetime import datetime
 
-# ✅ 허용된 이메일 목록
+# ✅ 허용된 아이디 목록
 ALLOWED_USERS = ["cotty23", "teleecho", "cotty00"]
 
 # ✅ 관리자 ID
 ADMIN_ID = "cotty23"
 
-# ✅ 카드 해석 딕셔너리 (초기값)
+# ✅ 카드 해석 딕셔너리
 card_meanings = {}
 
-# ✅ JSON 불러오기 기능
+# ✅ JSON 불러오기
 if os.path.exists("card_meanings.json"):
     with open("card_meanings.json", "r", encoding="utf-8") as f:
         card_meanings = json.load(f)
 
 # ✅ 로그인 처리
 if "user" not in st.session_state:
+    st.set_page_config(page_title="동양타로", page_icon="🌗", layout="centered")
+    hide_streamlit_style = """
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        .stApp { overflow-x: hidden; }
+        </style>
+    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
     st.markdown("## 🔐 로그인")
     email = st.text_input("아이디를 입력하세요")
     if st.button("로그인"):
@@ -33,7 +44,7 @@ if "user" not in st.session_state:
             st.error("접근 권한이 없습니다.")
     st.stop()
 
-# 세션 초기화
+# ➤ 세션 초기화
 for key in ["mode", "cards", "reversed", "extra_cards", "advice_card", "question_yes", "question_no", "history"]:
     if key not in st.session_state:
         st.session_state[key] = [] if key in ["cards", "reversed", "extra_cards", "history"] else ""
@@ -148,4 +159,35 @@ if st.session_state.user == ADMIN_ID:
         csv = df.to_csv(index=False).encode("utf-8-sig")
         st.download_button("📄 전체 카드 해석 CSV 다운로드", data=csv, file_name="card_meanings.csv", mime="text/csv")
 
-# ➤ 사용자 기능은 별도 파일 또는 다음 셀에서 분리 구현 (app mode)
+# ✅ 일반 사용자 메인화면
+if st.session_state.user != ADMIN_ID and st.session_state.mode == "":
+    st.markdown("---")
+    st.markdown("<h2 style='text-align:center;'>🌗 동양타로</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>\"한 장의 카드가 내 마음을 말하다\"</p>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔮 3카드 보기"):
+            st.session_state.cards = draw_cards(3)
+            st.session_state.extra_cards = [None, None, None]
+            st.session_state.mode = "3카드"
+    with col2:
+        if st.button("✨ 원카드"):
+            st.session_state.cards = draw_cards(1)
+            st.session_state.extra_cards = [None]
+            st.session_state.mode = "원카드"
+
+    col3, col4 = st.columns(2)
+    with col3:
+        if st.button("🔀 양자택일"):
+            st.session_state.cards = []
+            st.session_state.extra_cards = [None, None]
+            st.session_state.mode = "양자택일"
+    with col4:
+        if st.button("🗣 오늘의 조언"):
+            st.session_state.cards = draw_cards(1)
+            st.session_state.extra_cards = [None]
+            st.session_state.mode = "조언카드"
+
+    st.markdown("")
