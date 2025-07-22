@@ -41,6 +41,14 @@ def get_card_meaning(df, filename, direction):
             return row.iloc[0]["reversed"]
     return "등록된 해석이 없습니다."
 
+# 카드 이미지 표시
+def show_card(file, direction, width=200):
+    img_path = os.path.join(CARD_FOLDER, file)
+    img = Image.open(img_path)
+    if direction == "역방향":
+        img = img.rotate(180)
+    st.image(img, width=width)
+
 # 초기 세션 상태 설정
 if "subcards" not in st.session_state:
     st.session_state.subcards = {}
@@ -104,7 +112,22 @@ if mode in ["3카드 보기", "원카드", "조언카드"]:
     if st.session_state.question:
         if st.button("🔮 카드 뽑기"):
             st.write(f"**질문:** {st.session_state.question}")
-            # 여기에 카드 뽑기 기능을 구현하세요.
+            exclude_files = []
+            if mode == "3카드 보기":
+                st.session_state.cards = draw_cards(3)
+                for file, _ in st.session_state.cards:
+                    exclude_files.append(file)
+                for file, direction in st.session_state.cards:
+                    show_card(file, direction)
+                    st.markdown(get_card_meaning(card_data, file, direction))
+            elif mode == "원카드":
+                card = draw_cards(1)[0]
+                show_card(*card)
+                st.markdown(get_card_meaning(card_data, *card))
+            elif mode == "조언카드":
+                card = draw_cards(1)[0]
+                show_card(*card)
+                st.markdown(get_card_meaning(card_data, *card))
 
 elif mode == "양자택일":
     st.session_state.q1 = st.text_input("선택1 질문 입력")
@@ -113,4 +136,7 @@ elif mode == "양자택일":
         if st.button("🔍 선택별 카드 뽑기"):
             st.write(f"**선택1:** {st.session_state.q1}")
             st.write(f"**선택2:** {st.session_state.q2}")
-            # 여기에 카드 뽑기 기능을 구현하세요.
+            st.session_state.choice_cards = draw_cards(2)
+            for i, (file, direction) in enumerate(st.session_state.choice_cards):
+                show_card(file, direction)
+                st.markdown(get_card_meaning(card_data, file, direction))
