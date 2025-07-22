@@ -49,8 +49,8 @@ if "subcard_used" not in st.session_state:
     st.session_state.subcard_used = {}
 
 # 로그인
-st.title("🌓 동양타로")
-st.markdown("\"한 장의 카드가 내 마음을 말하다\"")
+st.title("\ud83c\udf03 \ub3d9\uc591\ud0c0\ub85c")
+st.markdown("\"\ud55c \uc7a5\uc758 \uce74\ub4dc\uac00 \ub0b4 \ub9c8\uc74c\uc744 \ub9d0\ud55c\ub2e4\"")
 
 if "login" not in st.session_state:
     st.session_state.login = ""
@@ -68,7 +68,7 @@ if user_id:
 
     st.success(f"{user_id}님 환영합니다.")
 
-    if st.button("🏠 처음으로"):
+    if st.button("\ud83c\udfe0 \ucc98\uc74c\uc73c\ub85c"):
         user_id_temp = user_id
         st.session_state.clear()
         st.session_state.login = user_id_temp
@@ -76,19 +76,19 @@ if user_id:
 
     # --- 관리자 모드 ---
     if is_admin:
-        st.subheader("🛠️ 관리자 전용: 카드 해석 등록 및 관리")
+        st.subheader("\ud83d\udee0\ufe0f \uad00\ub9ac\uc790 \uc804\uc6a9: \uce74\ub4dc \ud574\uc11d \ub4f1\ub85d \ubc0f \uad00\ub9ac")
 
         card_data = load_card_data()
         all_files = os.listdir(CARD_FOLDER)
         registered_files = card_data["filename"].tolist()
         unregistered_files = [f for f in all_files if f not in registered_files]
 
-        selected_file = st.selectbox("📋 해석이 등록되지 않은 카드 선택", unregistered_files)
+        selected_file = st.selectbox("\ud83d\udccb \ud574\uc11d\uc774 \ub4f1\ub85d\ub418\uc9c0 \uc54a\uc740 \uce74\ub4dc \uc120\ud0dd", unregistered_files)
 
-        upright = st.text_area("✅ 정방향 해석 입력")
-        reversed_ = st.text_area("⛔ 역방향 해석 입력")
+        upright = st.text_area("\u2705 \uc815\ubc29\ud654 \ud574\uc11d \uc785\ub825")
+        reversed_ = st.text_area("\u26d4 \uc5ed\ubc29\ud654 \ud574\uc11d \uc785\ub825")
 
-        if st.button("💾 해석 저장"):
+        if st.button("\ud83d\udcce \ud574\uc11d \uc800\uc7a5"):
             card_data = card_data.append({
                 "filename": selected_file,
                 "upright": upright,
@@ -97,13 +97,13 @@ if user_id:
             save_card_data(card_data)
             st.success("해석이 저장되었습니다.")
 
-        if st.button("🗂 전체 카드 해석 CSV 다운로드"):
+        if st.button("\ud83d\udcc2 \uc804\uccb4 \uce74\ub4dc \ud574\uc11d CSV \ub2e4\uc6b4\ub85c\ub4dc"):
             csv = card_data.to_csv(index=False).encode('utf-8-sig')
-            st.download_button("📥 다운로드", data=csv, file_name="card_data.csv", mime="text/csv")
+            st.download_button("\ud83d\udcc5 \ub2e4\uc6b4\ub85c\ub4dc", data=csv, file_name="card_data.csv", mime="text/csv")
 
     # --- 일반 사용자 모드 ---
     else:
-        st.subheader("🔮 타로 뽑기")
+        st.subheader("\ud83d\udd2e \ud0c0\ub85c \ubd2c\uae30")
         previous_mode = st.session_state.get("selected_mode")
         mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
 
@@ -130,4 +130,26 @@ if user_id:
             st.session_state.q1 = st.text_input("선택1 질문 입력", key="q1", value=st.session_state.get("q1", ""))
             st.session_state.q2 = st.text_input("선택2 질문 입력", key="q2", value=st.session_state.get("q2", ""))
 
-        # 이하 기존 로직 동일 (생략)
+        # 각 모드별로 질문 입력이 완료되었을 때만 뽑기 버튼 노출
+        if mode == "3카드 보기" and st.session_state.question.strip():
+            if st.button("\ud83d\udd2e 3\uc7a5 \ubd2c\uae30"):
+                st.session_state.cards = draw_cards(3)
+                st.session_state.subcards = {}
+                st.session_state.subcard_used = {}
+
+        if mode == "원카드" and st.session_state.question.strip():
+            if st.button("\u2728 \ud55c \uc7a5 \ubd2c\uae30"):
+                st.session_state.card = draw_cards(1)[0]
+                st.session_state.subcards = {}
+                st.session_state.subcard_used = {}
+
+        if mode == "조언카드" and st.session_state.question.strip():
+            if st.button("\ud83c\udf3f \uc624\ub298\uc758 \uc870\uc5b8\uce74\ub4dc"):
+                st.session_state.adv_card = draw_cards(1)[0]
+                st.session_state.subcards = {}
+                st.session_state.subcard_used = {}
+
+        if mode == "양자택일" and st.session_state.q1.strip() and st.session_state.q2.strip():
+            if st.button("\ud83d\udd0d \uc120\ud0dd\ubcc4 \uce74\ub4dc \ubd2c\uae30"):
+                st.session_state.choice_cards = draw_cards(2)
+                st.session_state.final_choice_card = None
