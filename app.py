@@ -41,26 +41,29 @@ def get_card_meaning(df, filename, direction):
             return row.iloc[0]["reversed"]
     return "등록된 해석이 없습니다."
 
+# 초기 세션 상태 설정
 if "subcards" not in st.session_state:
     st.session_state.subcards = {}
-
 if "subcard_used" not in st.session_state:
     st.session_state.subcard_used = {}
-
 if "question" not in st.session_state:
     st.session_state.question = ""
-
 if "q1" not in st.session_state:
     st.session_state.q1 = ""
-
 if "q2" not in st.session_state:
     st.session_state.q2 = ""
-
 if "login" not in st.session_state:
     st.session_state.login = ""
 
 user_id = st.session_state.login
 if not user_id:
+    st.title("🌓 동양타로")
+    st.markdown("""
+    "오늘, 당신의 운명에 귀 기울이세요.\n
+    동양의 오랜 지혜가 담긴 타로가 당신의 삶에 깊은 통찰과 명쾌한 해답을 선사합니다.\n
+    사랑, 직업, 재물 등 모든 고민에 대한 당신만의 길을 지금 바로 동양 타로에서 찾아보세요.\n
+    숨겨진 운명의 실타래를 풀어내고, 더 나은 내일을 위한 지혜를 얻을 시간입니다."
+    """)
     user_id = st.text_input("아이디를 입력하세요")
     st.session_state.login = user_id
 
