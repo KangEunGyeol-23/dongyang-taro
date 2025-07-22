@@ -6,7 +6,7 @@ from PIL import Image
 
 # --- 설정 ---
 ADMIN_IDS = ["cotty23"]
-USER_IDS = ["cotty00", "teleecho", "ckss12", "37nim"]
+USER_IDS = ["cotty00", "teleecho", "37nim", "ckss12"]
 
 CARD_FOLDER = "cards"
 CARD_DATA_FILE = "card_data.csv"
@@ -114,6 +114,14 @@ if user_id:
                 img = img.rotate(180)
             st.image(img, width=width)
 
+        # 공통 질문 입력
+        question = ""
+        if mode in ["3카드 보기", "원카드", "조언카드"]:
+            question = st.text_input("질문을 입력하세요")
+        elif mode == "양자택일":
+            q1 = st.text_input("선택1 질문 입력", key="q1")
+            q2 = st.text_input("선택2 질문 입력", key="q2")
+
         if mode == "3카드 보기":
             if st.button("🔮 3장 뽑기"):
                 st.session_state.cards = draw_cards(3)
@@ -121,6 +129,7 @@ if user_id:
                 st.session_state.subcard_used = {}
 
             if "cards" in st.session_state:
+                st.markdown(f"**질문:** {question}")
                 cols = st.columns(3)
                 used_files = [f for f, _ in st.session_state.cards]
                 for i, (file, direction) in enumerate(st.session_state.cards):
@@ -146,6 +155,7 @@ if user_id:
                 st.session_state.subcard_used = {}
 
             if "card" in st.session_state:
+                st.markdown(f"**질문:** {question}")
                 file, direction = st.session_state.card
                 show_card(file, direction, width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
@@ -168,6 +178,7 @@ if user_id:
                 st.session_state.subcard_used = {}
 
             if "adv_card" in st.session_state:
+                st.markdown(f"**질문:** {question}")
                 file, direction = st.session_state.adv_card
                 show_card(file, direction, width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
@@ -184,9 +195,6 @@ if user_id:
                     st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
         elif mode == "양자택일":
-            q1 = st.text_input("선택1 질문 입력", key="q1")
-            q2 = st.text_input("선택2 질문 입력", key="q2")
-
             if q1 and q2:
                 if st.button("🔍 선택별 카드 뽑기"):
                     st.session_state.choice_cards = draw_cards(2)
