@@ -3,7 +3,6 @@ import random
 import os
 import pandas as pd
 from PIL import Image
-import streamlit.components.v1 as components
 
 # --- 설정 ---
 ADMIN_IDS = ["cotty23"]
@@ -55,12 +54,6 @@ if "subcards" not in st.session_state:
     st.session_state.subcards = {}
 if "subcard_used" not in st.session_state:
     st.session_state.subcard_used = {}
-if "question" not in st.session_state:
-    st.session_state.question = ""
-if "q1" not in st.session_state:
-    st.session_state.q1 = ""
-if "q2" not in st.session_state:
-    st.session_state.q2 = ""
 if "login" not in st.session_state:
     st.session_state.login = ""
 if "cards" not in st.session_state:
@@ -70,7 +63,7 @@ if "adv_card" not in st.session_state:
 if "card" not in st.session_state:
     st.session_state.card = None
 
-# 로그인 로직
+# 로그인
 if not st.session_state.login:
     st.set_page_config(page_title="동양타로", layout="centered")
     st.markdown("""
@@ -107,55 +100,90 @@ if st.button("🏠 처음으로"):
     st.session_state.login = user_id_temp
     st.rerun()
 
-# 결과 이미지로 저장 (캡처 영역 지정)
-st.markdown("<div id='capture-area'>", unsafe_allow_html=True)
-
 # --- 카드 기능 모드 ---
 st.subheader("🔮 타로 뽑기")
 mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
 card_data = load_card_data()
 
-# 보조카드 표시 함수
+# 보조카드 표시 함수 (여러 개를 동시에 유지)
 def handle_subcard(file, exclude):
     if file in st.session_state.subcards:
         sub_file, sub_dir = st.session_state.subcards[file]
         show_card(sub_file, sub_dir, width=150)
         st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
-    elif st.button("🔁 보조카드 보기", key=f"sub_{file}"):
-        subcard = draw_cards(1, exclude=exclude)[0]
-        st.session_state.subcards[file] = subcard
-        st.session_state.subcard_used[file] = True
-        sub_file, sub_dir = subcard
-        show_card(sub_file, sub_dir, width=150)
-        st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+    else:
+        if st.button("🔁 보조카드 보기", key=f"subcard_btn_{file}"):
+            subcard = draw_cards(1, exclude=exclude + list(st.session_state.subcards.keys()))[0]
+            st.session_state.subcards[file] = subcard
+            sub_file, sub_dir = subcard
+            show_card(sub_file, sub_dir, width=150)
+            st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
-# 결과 저장 기능 추가 (출력용)
-def save_result_button(label, result_text):
-    st.download_button(
-        label=label,
-        data=result_text,
-        file_name="tarot_result.txt",
-        mime="text/plain"
-    )
+if mode == "3카드 보기":
+    if st.button("🔮 3장 뽑기"):
+        st.session_state.cards = draw_cards(3)
+        st.session_state.subcards = {}
 
-# --- [모드 실행 코드 동일 - 생략] ---
-# (전체 카드 뽑기 모드별 코드 반복 동일)
+    if st.session_state.cards:
+        cols = st.columns(3)
+        selected_files = [f for f, _ in st.session_state.cards]
+        for i, (file, direction) in enumerate(st.session_state.cards):
+            with cols[i]:
+                show_card(file, direction)
+                st.markdown(get_card_meaning(card_data, file, direction))
+                if direction == "역방향":
+                    handle_subcard(file, exclude=selected_files)
 
-st.markdown("</div>", unsafe_allow_html=True)
+elif mode == "원카드":
+    if st.button("✨ 한 장 뽑기"):
+        st.session_state.card = draw_cards(1)[0]
+        st.session_state.subcards = {}
 
-# 📸 캡처 버튼은 capture-area만 저장
-components.html("""
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <button onclick="capture()" style="margin-top: 30px;">📸 출력하기</button>
-    <script>
-        function capture() {
-            var target = document.getElementById("capture-area");
-            html2canvas(target).then(function(canvas) {
-                var link = document.createElement("a");
-                link.download = 'tarot_result.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-    </script>
-""", height=100)
+    if st.session_state.card:
+        file, direction = st.session_state.card
+        show_card(file, direction, width=300)
+        st.markdown(get_card_meaning(card_data, file, direction))
+        if direction == "역방향":
+            handle_subcard(file, exclude=[file])
+
+elif mode == "조언카드":
+    if st.button("🌿 오늘의 조언카드"):
+        st.session_state.adv_card = draw_cards(1)[0]
+        st.session_state.subcards = {}
+
+    if st.session_state.adv_card:
+        file, direction = st.session_state.adv_card
+        show_card(file, direction, width=300)
+        st.markdown(get_card_meaning(card_data, file, direction))
+        if direction == "역방향":
+            handle_subcard(file, exclude=[file])
+
+elif mode == "양자택일":
+    q1 = st.text_input("선택1 질문 입력", key="q1")
+    q2 = st.text_input("선택2 질문 입력", key="q2")
+
+    if q1 and q2:
+        if st.button("🔍 선택별 카드 뽑기"):
+            st.session_state.choice_cards = draw_cards(2)
+
+    if "choice_cards" in st.session_state:
+        cols = st.columns(2)
+        selected_files = [f for f, _ in st.session_state.choice_cards]
+        for i, (file, direction) in enumerate(st.session_state.choice_cards):
+            with cols[i]:
+                show_card(file, direction, width=200)
+                st.markdown(f"**선택{i+1}**")
+                st.markdown(f"질문: {q1 if i == 0 else q2}")
+                st.markdown(get_card_meaning(card_data, file, direction))
+
+    if q1 and q2:
+        if st.button("🧭 최종 결론 카드 보기"):
+            used = [f for f, _ in st.session_state.choice_cards]
+            st.session_state.final_choice_card = draw_cards(1, exclude=used)[0]
+
+    if "final_choice_card" in st.session_state and st.session_state.final_choice_card:
+        file, direction = st.session_state.final_choice_card
+        st.markdown("---")
+        st.markdown(f"### 🏁 최종 결론 카드")
+        show_card(file, direction, width=300)
+        st.markdown(get_card_meaning(card_data, file, direction))
