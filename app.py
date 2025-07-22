@@ -72,16 +72,15 @@ if "card" not in st.session_state:
 # 로그인 로직
 if not st.session_state.login:
     st.set_page_config(page_title="동양타로", layout="centered")
-    st.title("🌓 동양타로")
     st.markdown("""
-    "오늘, 당신의 운명에 귀 기울이세요."
-
-    동양의 오랜 지혜가 담긴 타로가 당신의 삶에 깊은 통찰과 명쾌한 해답을 선사합니다.
-
-    사랑, 직업, 재물 등 모든 고민에 대한 당신만의 길을 지금 바로 동양 타로에서 찾아보세요.
-
-    숨겨진 운명의 실타래를 풀어내고, 더 나은 내일을 위한 지혜를 얻을 시간입니다.
-    """)
+        <h1 style='text-align: center;'>🌓 동양타로</h1>
+        <div style='padding: 10px; background-color: #f5f5f5; border-radius: 10px; text-align: center;'>
+            <p style='font-size: 24px; font-weight: bold;'>오늘, 당신의 운명에 귀 기울이세요.</p>
+            <p style='font-size: 16px;'>동양의 오랜 지혜가 담긴 타로가 당신의 삶에 깊은 통찰과 명쾌한 해답을 선사합니다.</p>
+            <p style='font-size: 16px;'>사랑, 직업, 재물 등 모든 고민에 대한 당신만의 길을 지금 바로 동양 타로에서 찾아보세요.</p>
+            <p style='font-size: 16px;'>숨겨진 운명의 실타래를 풀어내고, 더 나은 내일을 위한 지혜를 얻을 시간입니다.</p>
+        </div>
+    """, unsafe_allow_html=True)
     input_id = st.text_input("아이디를 입력하세요")
     if input_id:
         st.session_state.login = input_id
