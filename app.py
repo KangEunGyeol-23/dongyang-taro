@@ -56,14 +56,13 @@ if "q1" not in st.session_state:
 if "q2" not in st.session_state:
     st.session_state.q2 = ""
 
-st.title("🌓 동양타로")
-st.markdown("\"한 장의 카드가 내 마음을 말하다\"")
-
 if "login" not in st.session_state:
     st.session_state.login = ""
 
-user_id = st.text_input("아이디를 입력하세요", value=st.session_state.login)
-st.session_state.login = user_id
+user_id = st.session_state.login
+if not user_id:
+    user_id = st.text_input("아이디를 입력하세요")
+    st.session_state.login = user_id
 
 if user_id:
     is_admin = user_id in ADMIN_IDS
@@ -73,6 +72,8 @@ if user_id:
         st.error("등록되지 않은 사용자입니다.")
         st.stop()
 
+    st.title("🌓 동양타로")
+    st.markdown("\"한 장의 카드가 내 마음을 말하다\"")
     st.success(f"{user_id}님 환영합니다.")
 
     if st.button("🏠 처음으로"):
@@ -147,7 +148,7 @@ if user_id:
 
                     if direction == "역방향" and file not in st.session_state.subcard_used:
                         if st.button(f"🔁 보조카드 보기 ({i+1})"):
-                            subcard = draw_cards(1, exclude=used_files)[0]
+                            subcard = draw_cards(1, exclude=used_files + list(st.session_state.subcards.keys()))[0]
                             st.session_state.subcards[file] = subcard
                             st.session_state.subcard_used[file] = True
 
