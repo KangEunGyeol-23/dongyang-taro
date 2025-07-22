@@ -62,6 +62,12 @@ if "q2" not in st.session_state:
     st.session_state.q2 = ""
 if "login" not in st.session_state:
     st.session_state.login = ""
+if "cards" not in st.session_state:
+    st.session_state.cards = []
+if "adv_card" not in st.session_state:
+    st.session_state.adv_card = None
+if "card" not in st.session_state:
+    st.session_state.card = None
 
 # 로그인 로직
 if not st.session_state.login:
@@ -101,7 +107,7 @@ if st.button("🏠 처음으로"):
     st.session_state.login = user_id_temp
     st.rerun()
 
-# --- 카드 기능 모드 예시 ---
+# --- 카드 기능 모드 ---
 st.subheader("🔮 타로 뽑기")
 mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
 card_data = load_card_data()
@@ -109,45 +115,58 @@ card_data = load_card_data()
 # 모드별 질문 처리 및 카드 뽑기 버튼
 if mode in ["3카드 보기", "원카드", "조언카드"]:
     st.session_state.question = st.text_input("질문을 입력하세요")
-    if st.session_state.question:
-        if st.button("🔮 카드 뽑기"):
-            st.session_state.subcards = {}
-            st.session_state.subcard_used = {}
-            st.write(f"**질문:** {st.session_state.question}")
-            exclude_files = []
-            if mode == "3카드 보기":
-                st.session_state.cards = draw_cards(3)
-                for file, _ in st.session_state.cards:
-                    exclude_files.append(file)
-                cols = st.columns(3)
-                for i, (file, direction) in enumerate(st.session_state.cards):
-                    with cols[i]:
-                        show_card(file, direction)
-                        st.markdown(get_card_meaning(card_data, file, direction))
-                        if direction == "역방향" and file not in st.session_state.subcard_used:
-                            if st.button(f"🔁 보조카드 보기 ({i+1})"):
-                                subcard = draw_cards(1, exclude=exclude_files)[0]
-                                st.session_state.subcards[file] = subcard
-                                st.session_state.subcard_used[file] = True
-                        if file in st.session_state.subcards:
-                            sub_file, sub_dir = st.session_state.subcards[file]
-                            show_card(sub_file, sub_dir, width=150)
-                            st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+    if st.session_state.question and st.button("🔮 카드 뽑기"):
+        st.session_state.subcards = {}
+        st.session_state.subcard_used = {}
+        exclude_files = []
 
-            elif mode in ["원카드", "조언카드"]:
-                card = draw_cards(1)[0]
-                show_card(*card)
-                st.markdown(get_card_meaning(card_data, *card))
-                file, direction = card
-                if direction == "역방향" and file not in st.session_state.subcard_used:
-                    if st.button("🔁 보조카드 보기"):
-                        subcard = draw_cards(1, exclude=[file])[0]
-                        st.session_state.subcards[file] = subcard
-                        st.session_state.subcard_used[file] = True
-                if file in st.session_state.subcards:
-                    sub_file, sub_dir = st.session_state.subcards[file]
-                    show_card(sub_file, sub_dir, width=150)
-                    st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+        if mode == "3카드 보기":
+            st.session_state.cards = draw_cards(3)
+            exclude_files = [file for file, _ in st.session_state.cards]
+            cols = st.columns(3)
+            for i, (file, direction) in enumerate(st.session_state.cards):
+                with cols[i]:
+                    show_card(file, direction)
+                    st.markdown(get_card_meaning(card_data, file, direction))
+                    if direction == "역방향" and file not in st.session_state.subcard_used:
+                        if st.button(f"🔁 보조카드 보기 ({i+1})", key=f"sub_{file}"):
+                            subcard = draw_cards(1, exclude=exclude_files)[0]
+                            st.session_state.subcards[file] = subcard
+                            st.session_state.subcard_used[file] = True
+                    if file in st.session_state.subcards:
+                        sub_file, sub_dir = st.session_state.subcards[file]
+                        show_card(sub_file, sub_dir, width=150)
+                        st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
+        elif mode == "원카드":
+            st.session_state.card = draw_cards(1)[0]
+            file, direction = st.session_state.card
+            show_card(file, direction)
+            st.markdown(get_card_meaning(card_data, file, direction))
+            if direction == "역방향" and file not in st.session_state.subcard_used:
+                if st.button("🔁 보조카드 보기", key="sub_one"):
+                    subcard = draw_cards(1, exclude=[file])[0]
+                    st.session_state.subcards[file] = subcard
+                    st.session_state.subcard_used[file] = True
+            if file in st.session_state.subcards:
+                sub_file, sub_dir = st.session_state.subcards[file]
+                show_card(sub_file, sub_dir, width=150)
+                st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
+        elif mode == "조언카드":
+            st.session_state.adv_card = draw_cards(1)[0]
+            file, direction = st.session_state.adv_card
+            show_card(file, direction)
+            st.markdown(get_card_meaning(card_data, file, direction))
+            if direction == "역방향" and file not in st.session_state.subcard_used:
+                if st.button("🔁 보조카드 보기", key="sub_adv"):
+                    subcard = draw_cards(1, exclude=[file])[0]
+                    st.session_state.subcards[file] = subcard
+                    st.session_state.subcard_used[file] = True
+            if file in st.session_state.subcards:
+                sub_file, sub_dir = st.session_state.subcards[file]
+                show_card(sub_file, sub_dir, width=150)
+                st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
 elif mode == "양자택일":
     st.session_state.q1 = st.text_input("선택1 질문 입력")
