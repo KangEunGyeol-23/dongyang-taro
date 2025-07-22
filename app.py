@@ -22,10 +22,12 @@ def load_card_data():
 def save_card_data(df):
     df.to_csv(CARD_DATA_FILE, index=False)
 
-# 카드 뽑기 함수 (정/역방향 랜덤 포함)
-def draw_cards(n=1):
+# 카드 뽑기 함수 (중복 제외)
+def draw_cards(n=1, exclude=None):
     files = os.listdir(CARD_FOLDER)
-    selected = random.sample(files, n)
+    if exclude:
+        files = [f for f in files if f not in exclude]
+    selected = random.sample(files, min(n, len(files)))
     cards = [(file, random.choice(["정방향", "역방향"])) for file in selected]
     return cards
 
@@ -120,6 +122,7 @@ if user_id:
 
             if "cards" in st.session_state:
                 cols = st.columns(3)
+                used_files = [f for f, _ in st.session_state.cards]
                 for i, (file, direction) in enumerate(st.session_state.cards):
                     with cols[i]:
                         show_card(file, direction)
@@ -127,7 +130,7 @@ if user_id:
 
                         if direction == "역방향" and file not in st.session_state.subcard_used:
                             if st.button(f"🔁 보조카드 보기 ({i+1})"):
-                                subcard = draw_cards(1)[0]
+                                subcard = draw_cards(1, exclude=used_files + list(st.session_state.subcards.keys()))[0]
                                 st.session_state.subcards[file] = subcard
                                 st.session_state.subcard_used[file] = True
 
@@ -149,7 +152,7 @@ if user_id:
 
                 if direction == "역방향" and file not in st.session_state.subcard_used:
                     if st.button("🔁 보조카드 보기"):
-                        subcard = draw_cards(1)[0]
+                        subcard = draw_cards(1, exclude=[file])[0]
                         st.session_state.subcards[file] = subcard
                         st.session_state.subcard_used[file] = True
 
@@ -171,7 +174,7 @@ if user_id:
 
                 if direction == "역방향" and file not in st.session_state.subcard_used:
                     if st.button("🔁 보조카드 보기"):
-                        subcard = draw_cards(1)[0]
+                        subcard = draw_cards(1, exclude=[file])[0]
                         st.session_state.subcards[file] = subcard
                         st.session_state.subcard_used[file] = True
 
@@ -191,6 +194,7 @@ if user_id:
 
             if "choice_cards" in st.session_state:
                 cols = st.columns(2)
+                used_files = [f for f, _ in st.session_state.choice_cards]
                 for i, (file, direction) in enumerate(st.session_state.choice_cards):
                     with cols[i]:
                         show_card(file, direction, width=200)
@@ -200,7 +204,8 @@ if user_id:
 
             if q1 and q2:
                 if st.button("🧭 최종 결론 카드 보기"):
-                    st.session_state.final_choice_card = draw_cards(1)[0]
+                    used_files = [f for f, _ in st.session_state.choice_cards] if "choice_cards" in st.session_state else []
+                    st.session_state.final_choice_card = draw_cards(1, exclude=used_files)[0]
 
             if "final_choice_card" in st.session_state and st.session_state.final_choice_card:
                 file, direction = st.session_state.final_choice_card
@@ -208,24 +213,3 @@ if user_id:
                 st.markdown(f"### 🏁 최종 결론 카드")
                 show_card(file, direction, width=300)
                 st.markdown(get_card_meaning(card_data, file, direction))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
