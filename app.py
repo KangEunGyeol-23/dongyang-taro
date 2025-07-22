@@ -3,51 +3,32 @@ import random
 import os
 import pandas as pd
 from PIL import Image
-import streamlit.components.v1 as components # 이미지 저장을 위해 필요
+import streamlit.components.v1 as components
 
 # --- 설정 ---
 ADMIN_IDS = ["cotty23"]
 USER_IDS = ["cotty00", "teleecho", "37nim", "ckss12"]
 
-CARD_FOLDER = "cards"  # 'cards' 폴더가 현재 스크립트와 같은 경로에 있는지 확인하세요.
-CARD_DATA_FILE = "card_data.csv"  # 'card_data.csv' 파일이 현재 스크립트와 같은 경로에 있는지 확인하세요.
-
-# --- 함수 정의 ---
+CARD_FOLDER = "cards"
+CARD_DATA_FILE = "card_data.csv"
 
 # 카드 데이터 불러오기
 def load_card_data():
     if os.path.exists(CARD_DATA_FILE):
         return pd.read_csv(CARD_DATA_FILE)
     else:
-        # 파일이 없을 경우, 컬럼 정의를 명확히 하여 빈 DataFrame 생성
-        # filename, upright, reversed 컬럼은 반드시 존재해야 합니다.
         return pd.DataFrame(columns=["filename", "upright", "reversed"])
 
-# 카드 데이터 저장하기 (현재 코드에서는 사용되지 않지만, 관리자 기능 등을 위해 유지)
+# 카드 데이터 저장하기
 def save_card_data(df):
     df.to_csv(CARD_DATA_FILE, index=False)
 
-# 카드 뽑기 함수 (중복 제외 및 파일 확장자 필터링)
+# 카드 뽑기 함수 (중복 제외)
 def draw_cards(n=1, exclude=None):
-    if not os.path.exists(CARD_FOLDER):
-        st.error(f"'{CARD_FOLDER}' 폴더를 찾을 수 없습니다. 카드 이미지를 넣어주세요.")
-        return []
-
-    # 지원되는 이미지 파일 확장자 목록
-    allowed_extensions = ('.png', '.jpg', '.jpeg', '.gif', '.bmp')
-    files = [f for f in os.listdir(CARD_FOLDER) if f.lower().endswith(allowed_extensions)]
-    
+    files = os.listdir(CARD_FOLDER)
     if exclude:
         files = [f for f in files if f not in exclude]
-    
-    # files 리스트가 비어있을 경우 에러 방지
-    if not files:
-        st.warning("카드 폴더에 이미지가 없거나, 모든 카드가 이미 뽑혔습니다.")
-        return []
-        
-    # 뽑아야 할 카드 수가 남은 카드 수보다 많을 경우를 대비
-    num_to_draw = min(n, len(files))
-    selected = random.sample(files, num_to_draw)
+    selected = random.sample(files, min(n, len(files)))
     cards = [(file, random.choice(["정방향", "역방향"])) for file in selected]
     return cards
 
@@ -59,69 +40,202 @@ def get_card_meaning(df, filename, direction):
             return row.iloc[0]["upright"]
         else:
             return row.iloc[0]["reversed"]
-    return "**[해석 없음]** 이 카드의 해석이 등록되지 않았습니다."
+    return "등록된 해석이 없습니다."
 
 # 카드 이미지 표시
-def show_card(file, direction, width=150):
+def show_card(file, direction, width=200):
     img_path = os.path.join(CARD_FOLDER, file)
-    try:
-        img = Image.open(img_path)
-        if direction == "역방향":
-            img = img.rotate(180)
-        # `use_column_width=False` 대신 `use_container_width=False` 사용
-        st.image(img, width=width, use_container_width=False) 
-        st.caption(f"**{direction}**") # 정방향/역방향 표시 추가 (굵게)
-    except FileNotFoundError:
-        st.error(f"이미지를 찾을 수 없습니다: {file}")
-    except Exception as e:
-        st.error(f"이미지 로드 중 오류 발생: {e}")
+    img = Image.open(img_path)
+    if direction == "역방향":
+        img = img.rotate(180)
+    st.image(img, width=width)
 
-# --- JavaScript 함수 삽입 (html2canvas 로드 및 캡처) ---
-def inject_js_for_screenshot(target_id, button_label):
-    js_code = f"""
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <script>
-    function downloadDivAsImage(divId, filename) {{
-        var element = document.getElementById(divId);
-        if (!element) {{
-            console.error("Element with ID " + divId + " not found.");
-            return;
-        }}
-        // html2canvas 설정: 크로스 오리진 이미지 허용, 해상도 2배로 높이기
-        html2canvas(element, {{
-            useCORS: true, 
-            scale: 2 
-        }}).then(function(canvas) {{
-            var link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = filename + '.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }});
-    }}
-    </script>
-    <button onclick="downloadDivAsImage('{target_id}', 'tarot_result')" 
-            style="
-                background-color: #4CAF50; /* Green */
-                border: none;
-                color: white;
-                padding: 10px 20px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 8px;
-            ">
-            {button_label}
-    </button>
-    """
-    # Streamlit에 HTML/JS 삽입. height를 충분히 주어야 버튼이 잘 보입니다.
-    components.html(js_code, height=60)
-
-# --- 세션 상태 초기화 ---
-# 앱이 시작될 때 단 한 번만 실행되도록
+# 초기 세션 상태 설정
 if "subcards" not in st.session_state:
-    st.session_state.subcards = {} # 각 카드에 대한 보조
+    st.session_state.subcards = {}
+if "subcard_used" not in st.session_state:
+    st.session_state.subcard_used = {}
+if "question" not in st.session_state:
+    st.session_state.question = ""
+if "q1" not in st.session_state:
+    st.session_state.q1 = ""
+if "q2" not in st.session_state:
+    st.session_state.q2 = ""
+if "login" not in st.session_state:
+    st.session_state.login = ""
+if "cards" not in st.session_state:
+    st.session_state.cards = []
+if "adv_card" not in st.session_state:
+    st.session_state.adv_card = None
+if "card" not in st.session_state:
+    st.session_state.card = None
+
+# 로그인 로직
+if not st.session_state.login:
+    st.set_page_config(page_title="동양타로", layout="centered")
+    st.markdown("""
+        <h1 style='text-align: center;'>🌓 동양타로</h1>
+        <div style='padding: 10px; background-color: #f5f5f5; border-radius: 10px; text-align: center;'>
+            <p style='font-size: 28px; font-weight: bold; color: #4a148c;'>오늘, 당신의 운명에 귀 기울이세요.</p>
+            <p style='font-size: 18px;'>동양의 오랜 지혜가 담긴 타로가 당신의 삶에 깊은 통찰과 명쾌한 해답을 선사합니다.</p>
+            <p style='font-size: 18px;'>사랑, 직업, 재물 등 모든 고민에 대한 당신만의 길을 지금 바로 동양 타로에서 찾아보세요.</p>
+            <p style='font-size: 18px;'>숨겨진 운명의 실타래를 풀어내고, 더 나은 내일을 위한 지혜를 얻을 시간입니다.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    input_id = st.text_input("아이디를 입력하세요")
+    if input_id:
+        st.session_state.login = input_id
+        st.rerun()
+    st.stop()
+
+user_id = st.session_state.login
+is_admin = user_id in ADMIN_IDS
+is_user = user_id in USER_IDS
+
+if not (is_admin or is_user):
+    st.error("등록되지 않은 사용자입니다.")
+    st.stop()
+
+st.set_page_config(page_title="동양타로", layout="centered")
+st.title("🌓 동양타로")
+st.markdown("한 장의 카드가 내 마음을 말하다")
+st.success(f"{user_id}님 환영합니다.")
+
+if st.button("🏠 처음으로"):
+    user_id_temp = user_id
+    st.session_state.clear()
+    st.session_state.login = user_id_temp
+    st.rerun()
+
+# --- 카드 기능 모드 ---
+st.subheader("🔮 타로 뽑기")
+mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
+card_data = load_card_data()
+
+# 보조카드 표시 함수
+def handle_subcard(file, exclude):
+    if file in st.session_state.subcards:
+        sub_file, sub_dir = st.session_state.subcards[file]
+        show_card(sub_file, sub_dir, width=150)
+        st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+    elif st.button("🔁 보조카드 보기", key=f"sub_{file}"):
+        subcard = draw_cards(1, exclude=exclude)[0]
+        st.session_state.subcards[file] = subcard
+        st.session_state.subcard_used[file] = True
+        sub_file, sub_dir = subcard
+        show_card(sub_file, sub_dir, width=150)
+        st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
+# 결과 저장 기능 추가 (출력용)
+def save_result_button(label, result_text):
+    st.download_button(
+        label=label,
+        data=result_text,
+        file_name="tarot_result.txt",
+        mime="text/plain"
+    )
+
+# 모드별 실행
+if mode == "3카드 보기":
+    st.session_state.question = st.text_input("질문을 입력하세요")
+    if st.session_state.question and st.button("🔮 카드 뽑기"):
+        st.session_state.cards = draw_cards(3)
+        st.session_state.subcards = {}
+        st.session_state.subcard_used = {}
+
+    if st.session_state.cards:
+        exclude = [f for f, _ in st.session_state.cards]
+        result_text = f"질문: {st.session_state.question}\n\n"
+        cols = st.columns(3)
+        for i, (file, direction) in enumerate(st.session_state.cards):
+            with cols[i]:
+                show_card(file, direction)
+                meaning = get_card_meaning(card_data, file, direction)
+                st.markdown(meaning)
+                result_text += f"카드 {i+1}: {file} ({direction})\n{meaning}\n\n"
+                if direction == "역방향" and file not in st.session_state.subcard_used:
+                    handle_subcard(file, exclude)
+        save_result_button("💾 결과 저장하기", result_text)
+
+elif mode == "원카드":
+    st.session_state.question = st.text_input("질문을 입력하세요")
+    if st.session_state.question and st.button("🔮 카드 뽑기"):
+        st.session_state.card = draw_cards(1)[0]
+        st.session_state.subcards = {}
+        st.session_state.subcard_used = {}
+
+    if st.session_state.card:
+        file, direction = st.session_state.card
+        show_card(file, direction)
+        meaning = get_card_meaning(card_data, file, direction)
+        st.markdown(meaning)
+        if direction == "역방향" and file not in st.session_state.subcard_used:
+            handle_subcard(file, [file])
+        save_result_button("💾 결과 저장하기", f"질문: {st.session_state.question}\n카드: {file} ({direction})\n{meaning}")
+
+elif mode == "조언카드":
+    st.session_state.question = st.text_input("질문을 입력하세요")
+    if st.session_state.question and st.button("🔮 카드 뽑기"):
+        st.session_state.adv_card = draw_cards(1)[0]
+        st.session_state.subcards = {}
+        st.session_state.subcard_used = {}
+
+    if st.session_state.adv_card:
+        file, direction = st.session_state.adv_card
+        show_card(file, direction)
+        meaning = get_card_meaning(card_data, file, direction)
+        st.markdown(meaning)
+        if direction == "역방향" and file not in st.session_state.subcard_used:
+            handle_subcard(file, [file])
+        save_result_button("💾 결과 저장하기", f"질문: {st.session_state.question}\n카드: {file} ({direction})\n{meaning}")
+
+elif mode == "양자택일":
+    st.session_state.q1 = st.text_input("선택1 질문 입력")
+    st.session_state.q2 = st.text_input("선택2 질문 입력")
+
+    if st.session_state.q1 and st.session_state.q2:
+        if st.button("🔍 선택별 카드 뽑기"):
+            st.session_state.choice_cards = draw_cards(2)
+            st.session_state.final_choice_card = None
+
+        if "choice_cards" in st.session_state:
+            exclude = [f for f, _ in st.session_state.choice_cards]
+            result_text = ""
+            cols = st.columns(2)
+            for i, (file, direction) in enumerate(st.session_state.choice_cards):
+                with cols[i]:
+                    question = st.session_state.q1 if i == 0 else st.session_state.q2
+                    st.markdown(f"질문: {question}")
+                    show_card(file, direction)
+                    meaning = get_card_meaning(card_data, file, direction)
+                    st.markdown(meaning)
+                    result_text += f"선택 {i+1}: {file} ({direction})\n{meaning}\n\n"
+
+        if st.button("🧭 최종 결론 카드 보기"):
+            final = draw_cards(1, exclude=exclude)[0]
+            st.session_state.final_choice_card = final
+
+        if "final_choice_card" in st.session_state and st.session_state.final_choice_card:
+            file, direction = st.session_state.final_choice_card
+            st.markdown("### 🏁 최종 결론 카드")
+            show_card(file, direction, width=250)
+            meaning = get_card_meaning(card_data, file, direction)
+            st.markdown(meaning)
+            result_text += f"최종 결론: {file} ({direction})\n{meaning}\n"
+            save_result_button("💾 결과 저장하기", result_text)
+
+# 결과 이미지로 저장 (캡처)
+components.html("""
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <button onclick="capture()" style="margin-top: 30px;">📸 출력하기</button>
+    <script>
+        function capture() {
+            html2canvas(document.body).then(function(canvas) {
+                var link = document.createElement("a");
+                link.download = 'tarot_result.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+""", height=100)
