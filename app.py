@@ -56,8 +56,7 @@ if "login" not in st.session_state:
     st.session_state.login = ""
 
 # 로그인 로직
-user_id = st.session_state.login
-if not user_id:
+if not st.session_state.login:
     st.set_page_config(page_title="동양타로", layout="centered")
     st.title("🌓 동양타로")
     st.markdown("""
@@ -94,5 +93,6 @@ if st.button("🏠 처음으로"):
     st.session_state.login = user_id_temp
     st.rerun()
 
-# 이하 코드 동일 (기능 로직 부분)
-# ... 유지됨 ...
+# 카드 기능은 여기서부터 이어져야 합니다.
+# 예: 모드 선택, 질문 입력, 카드 뽑기 등 기능 로직 삽입 위치
+# 이후 코드 추가 필요
