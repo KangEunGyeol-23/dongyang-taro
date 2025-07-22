@@ -41,16 +41,23 @@ def get_card_meaning(df, filename, direction):
             return row.iloc[0]["reversed"]
     return "등록된 해석이 없습니다."
 
-# 보조카드 관련 처리 상태 저장용
 if "subcards" not in st.session_state:
     st.session_state.subcards = {}
 
 if "subcard_used" not in st.session_state:
     st.session_state.subcard_used = {}
 
-# 로그인
-st.title("\ud83c\udf03 \ub3d9\uc591\ud0c0\ub85c")
-st.markdown("\"\ud55c \uc7a5\uc758 \uce74\ub4dc\uac00 \ub0b4 \ub9c8\uc74c\uc744 \ub9d0\ud55c\ub2e4\"")
+if "question" not in st.session_state:
+    st.session_state.question = ""
+
+if "q1" not in st.session_state:
+    st.session_state.q1 = ""
+
+if "q2" not in st.session_state:
+    st.session_state.q2 = ""
+
+st.title("🌓 동양타로")
+st.markdown("\"한 장의 카드가 내 마음을 말하다\"")
 
 if "login" not in st.session_state:
     st.session_state.login = ""
@@ -68,27 +75,24 @@ if user_id:
 
     st.success(f"{user_id}님 환영합니다.")
 
-    if st.button("\ud83c\udfe0 \ucc98\uc74c\uc73c\ub85c"):
+    if st.button("🏠 처음으로"):
         user_id_temp = user_id
         st.session_state.clear()
         st.session_state.login = user_id_temp
         st.rerun()
 
-    # --- 관리자 모드 ---
     if is_admin:
-        st.subheader("\ud83d\udee0\ufe0f \uad00\ub9ac\uc790 \uc804\uc6a9: \uce74\ub4dc \ud574\uc11d \ub4f1\ub85d \ubc0f \uad00\ub9ac")
-
+        st.subheader("🛠️ 관리자 전용: 카드 해석 등록 및 관리")
         card_data = load_card_data()
         all_files = os.listdir(CARD_FOLDER)
         registered_files = card_data["filename"].tolist()
         unregistered_files = [f for f in all_files if f not in registered_files]
 
-        selected_file = st.selectbox("\ud83d\udccb \ud574\uc11d\uc774 \ub4f1\ub85d\ub418\uc9c0 \uc54a\uc740 \uce74\ub4dc \uc120\ud0dd", unregistered_files)
+        selected_file = st.selectbox("📋 해석이 등록되지 않은 카드 선택", unregistered_files)
+        upright = st.text_area("✅ 정방향 해석 입력")
+        reversed_ = st.text_area("⛔ 역방향 해석 입력")
 
-        upright = st.text_area("\u2705 \uc815\ubc29\ud654 \ud574\uc11d \uc785\ub825")
-        reversed_ = st.text_area("\u26d4 \uc5ed\ubc29\ud654 \ud574\uc11d \uc785\ub825")
-
-        if st.button("\ud83d\udcce \ud574\uc11d \uc800\uc7a5"):
+        if st.button("💾 해석 저장"):
             card_data = card_data.append({
                 "filename": selected_file,
                 "upright": upright,
@@ -97,17 +101,15 @@ if user_id:
             save_card_data(card_data)
             st.success("해석이 저장되었습니다.")
 
-        if st.button("\ud83d\udcc2 \uc804\uccb4 \uce74\ub4dc \ud574\uc11d CSV \ub2e4\uc6b4\ub85c\ub4dc"):
+        if st.button("🗂 전체 카드 해석 CSV 다운로드"):
             csv = card_data.to_csv(index=False).encode('utf-8-sig')
-            st.download_button("\ud83d\udcc5 \ub2e4\uc6b4\ub85c\ub4dc", data=csv, file_name="card_data.csv", mime="text/csv")
+            st.download_button("📥 다운로드", data=csv, file_name="card_data.csv", mime="text/csv")
 
-    # --- 일반 사용자 모드 ---
     else:
-        st.subheader("\ud83d\udd2e \ud0c0\ub85c \ubd2c\uae30")
+        st.subheader("🔮 타로 뽑기")
         previous_mode = st.session_state.get("selected_mode")
         mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
 
-        # 모드 변경 시 질문 초기화
         if previous_mode != mode:
             st.session_state.question = ""
             st.session_state.q1 = ""
@@ -123,33 +125,104 @@ if user_id:
                 img = img.rotate(180)
             st.image(img, width=width)
 
-        # 공통 질문 입력
         if mode in ["3카드 보기", "원카드", "조언카드"]:
-            st.session_state.question = st.text_input("질문을 입력하세요", value=st.session_state.get("question", ""))
+            st.session_state.question = st.text_input("질문을 입력하세요", value=st.session_state.question)
         elif mode == "양자택일":
-            st.session_state.q1 = st.text_input("선택1 질문 입력", key="q1", value=st.session_state.get("q1", ""))
-            st.session_state.q2 = st.text_input("선택2 질문 입력", key="q2", value=st.session_state.get("q2", ""))
+            st.session_state.q1 = st.text_input("선택1 질문 입력", value=st.session_state.q1)
+            st.session_state.q2 = st.text_input("선택2 질문 입력", value=st.session_state.q2)
 
-        # 각 모드별로 질문 입력이 완료되었을 때만 뽑기 버튼 노출
         if mode == "3카드 보기" and st.session_state.question.strip():
-            if st.button("\ud83d\udd2e 3\uc7a5 \ubd2c\uae30"):
+            if st.button("🔮 3장 뽑기"):
                 st.session_state.cards = draw_cards(3)
                 st.session_state.subcards = {}
                 st.session_state.subcard_used = {}
 
+        if "cards" in st.session_state:
+            cols = st.columns(3)
+            used_files = [f for f, _ in st.session_state.cards]
+            for i, (file, direction) in enumerate(st.session_state.cards):
+                with cols[i]:
+                    show_card(file, direction)
+                    st.markdown(get_card_meaning(card_data, file, direction))
+
+                    if direction == "역방향" and file not in st.session_state.subcard_used:
+                        if st.button(f"🔁 보조카드 보기 ({i+1})"):
+                            subcard = draw_cards(1, exclude=used_files)[0]
+                            st.session_state.subcards[file] = subcard
+                            st.session_state.subcard_used[file] = True
+
+                    if file in st.session_state.subcards:
+                        sub_file, sub_dir = st.session_state.subcards[file]
+                        show_card(sub_file, sub_dir, width=150)
+                        st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
         if mode == "원카드" and st.session_state.question.strip():
-            if st.button("\u2728 \ud55c \uc7a5 \ubd2c\uae30"):
+            if st.button("✨ 한 장 뽑기"):
                 st.session_state.card = draw_cards(1)[0]
                 st.session_state.subcards = {}
                 st.session_state.subcard_used = {}
 
+        if "card" in st.session_state:
+            file, direction = st.session_state.card
+            show_card(file, direction, width=300)
+            st.markdown(get_card_meaning(card_data, file, direction))
+
+            if direction == "역방향" and file not in st.session_state.subcard_used:
+                if st.button("🔁 보조카드 보기"):
+                    subcard = draw_cards(1, exclude=[file])[0]
+                    st.session_state.subcards[file] = subcard
+                    st.session_state.subcard_used[file] = True
+
+            if file in st.session_state.subcards:
+                sub_file, sub_dir = st.session_state.subcards[file]
+                show_card(sub_file, sub_dir, width=200)
+                st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
         if mode == "조언카드" and st.session_state.question.strip():
-            if st.button("\ud83c\udf3f \uc624\ub298\uc758 \uc870\uc5b8\uce74\ub4dc"):
+            if st.button("🌿 오늘의 조언카드"):
                 st.session_state.adv_card = draw_cards(1)[0]
                 st.session_state.subcards = {}
                 st.session_state.subcard_used = {}
 
+        if "adv_card" in st.session_state:
+            file, direction = st.session_state.adv_card
+            show_card(file, direction, width=300)
+            st.markdown(get_card_meaning(card_data, file, direction))
+
+            if direction == "역방향" and file not in st.session_state.subcard_used:
+                if st.button("🔁 보조카드 보기"):
+                    subcard = draw_cards(1, exclude=[file])[0]
+                    st.session_state.subcards[file] = subcard
+                    st.session_state.subcard_used[file] = True
+
+            if file in st.session_state.subcards:
+                sub_file, sub_dir = st.session_state.subcards[file]
+                show_card(sub_file, sub_dir, width=200)
+                st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
         if mode == "양자택일" and st.session_state.q1.strip() and st.session_state.q2.strip():
-            if st.button("\ud83d\udd0d \uc120\ud0dd\ubcc4 \uce74\ub4dc \ubd2c\uae30"):
+            if st.button("🔍 선택별 카드 뽑기"):
                 st.session_state.choice_cards = draw_cards(2)
                 st.session_state.final_choice_card = None
+
+        if "choice_cards" in st.session_state:
+            used_files = [f for f, _ in st.session_state.choice_cards]
+            cols = st.columns(2)
+            for i, (file, direction) in enumerate(st.session_state.choice_cards):
+                with cols[i]:
+                    show_card(file, direction, width=200)
+                    st.markdown(f"**선택{i+1}**")
+                    st.markdown(f"질문: {st.session_state.q1 if i == 0 else st.session_state.q2}")
+                    st.markdown(get_card_meaning(card_data, file, direction))
+
+        if st.session_state.q1.strip() and st.session_state.q2.strip():
+            if st.button("🧭 최종 결론 카드 보기"):
+                exclude_files = [f for f, _ in st.session_state.choice_cards] if "choice_cards" in st.session_state else []
+                st.session_state.final_choice_card = draw_cards(1, exclude=exclude_files)[0]
+
+        if "final_choice_card" in st.session_state and st.session_state.final_choice_card:
+            file, direction = st.session_state.final_choice_card
+            st.markdown("---")
+            st.markdown(f"### 🏁 최종 결론 카드")
+            show_card(file, direction, width=300)
+            st.markdown(get_card_meaning(card_data, file, direction))
