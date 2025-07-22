@@ -98,11 +98,19 @@ st.subheader("🔮 타로 뽑기")
 mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일"])
 card_data = load_card_data()
 
+# 모드별 질문 처리 및 카드 뽑기 버튼
 if mode in ["3카드 보기", "원카드", "조언카드"]:
     st.session_state.question = st.text_input("질문을 입력하세요")
+    if st.session_state.question:
+        if st.button("🔮 카드 뽑기"):
+            st.write(f"**질문:** {st.session_state.question}")
+            # 여기에 카드 뽑기 기능을 구현하세요.
 
-if mode == "양자택일":
+elif mode == "양자택일":
     st.session_state.q1 = st.text_input("선택1 질문 입력")
     st.session_state.q2 = st.text_input("선택2 질문 입력")
-
-# 이후 각 모드별 기능 로직 추가 필요
+    if st.session_state.q1 and st.session_state.q2:
+        if st.button("🔍 선택별 카드 뽑기"):
+            st.write(f"**선택1:** {st.session_state.q1}")
+            st.write(f"**선택2:** {st.session_state.q2}")
+            # 여기에 카드 뽑기 기능을 구현하세요.
