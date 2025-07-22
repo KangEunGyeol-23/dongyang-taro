@@ -6,7 +6,7 @@ from PIL import Image
 
 # --- 설정 ---
 ADMIN_IDS = ["cotty23"]
-USER_IDS = ["cotty00", "teleecho", "ckss12", 37nim]
+USER_IDS = ["cotty00", "teleecho", "ckss12", "37nim"]
 
 CARD_FOLDER = "cards"
 CARD_DATA_FILE = "card_data.csv"
