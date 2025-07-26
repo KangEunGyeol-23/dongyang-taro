@@ -115,7 +115,7 @@ if st.button("🏠 처음으로"):
     st.session_state.login = user_id_temp
     st.rerun()
 
-# 관리자가 로그인한 경우 로그인 기록 보기
+# 관리자가 로그인한 경우 로그인 기록 보기 및 카드 등록
 if is_admin:
     if os.path.exists(LOGIN_LOG_FILE):
         st.markdown("---")
@@ -153,4 +153,22 @@ if is_admin:
         save_card_data(card_data)
         st.success("카드 해석이 저장되었습니다.")
 
-# --- 이하 타로 카드 모드 등 기존 코드 유지 ---
+# --- 타로 모드 선택 ---
+st.markdown("---")
+st.subheader("🔮 타로 모드 선택")
+mode = st.radio("모드를 선택하세요", ["3카드 보기", "원카드", "오늘의조언카드", "양자택일", "12개월운보기 (월별)"])
+
+# 카드 데이터 불러오기
+card_data = load_card_data()
+
+# 모드별 기능 연결
+if mode == "3카드 보기":
+    st.write("3카드 기능 연결 예정")
+elif mode == "원카드":
+    st.write("원카드 기능 연결 예정")
+elif mode == "오늘의조언카드":
+    st.write("오늘의 조언카드 기능 연결 예정")
+elif mode == "양자택일":
+    st.write("양자택일 기능 연결 예정")
+elif mode == "12개월운보기 (월별)":
+    st.write("12개월 카드 기능 연결 예정")
