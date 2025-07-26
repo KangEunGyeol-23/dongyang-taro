@@ -153,6 +153,7 @@ if is_user or is_admin:
         if st.button("🔮 3장 뽑기"):
             st.session_state.cards = draw_cards(3)
             st.session_state.subcards = {}
+            st.session_state.advice_for_three_cards = None
 
         if st.session_state.cards:
             cols = st.columns(3)
@@ -163,6 +164,16 @@ if is_user or is_admin:
                     st.markdown(get_card_meaning(card_data, file, direction))
                     if direction == "역방향":
                         handle_subcard(file, exclude=selected_files)
+
+            if st.button("🌟 조언카드 보기"):
+                st.session_state.advice_for_three_cards = draw_cards(1, exclude=selected_files)[0]
+
+            if st.session_state.advice_for_three_cards:
+                st.markdown("---")
+                st.markdown("### 🧭 3카드에 대한 조언")
+                file, direction = st.session_state.advice_for_three_cards
+                show_card(file, direction, width=300)
+                st.markdown(get_card_meaning(card_data, file, direction))
 
     elif mode == "원카드":
         if st.button("✨ 한 장 뽑기"):
