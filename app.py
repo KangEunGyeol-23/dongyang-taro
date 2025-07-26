@@ -115,44 +115,6 @@ if st.button("🏠 처음으로"):
     st.session_state.login = user_id_temp
     st.rerun()
 
-# 관리자가 로그인한 경우 로그인 기록 보기 및 카드 등록
-if is_admin:
-    if os.path.exists(LOGIN_LOG_FILE):
-        st.markdown("---")
-        st.subheader("🗂️ 로그인 기록 (Admin 전용)")
-        logs = pd.read_csv(LOGIN_LOG_FILE)
-        st.dataframe(logs.tail(20), use_container_width=True)
-
-    st.markdown("---")
-    st.subheader("📝 카드 해석 등록 / 수정 (Admin 전용)")
-
-    card_data = load_card_data()
-    all_files = os.listdir(CARD_FOLDER)
-    selected_file = st.selectbox("🃏 카드 이미지 선택", all_files)
-
-    # 해당 카드의 기존 해석 불러오기
-    existing = card_data[card_data["filename"] == selected_file]
-    upright_text = existing["upright"].values[0] if not existing.empty else ""
-    reversed_text = existing["reversed"].values[0] if not existing.empty else ""
-
-    # 입력창
-    new_upright = st.text_area("🟢 정방향 해석", value=upright_text)
-    new_reversed = st.text_area("🔴 역방향 해석", value=reversed_text)
-
-    # 저장 버튼
-    if st.button("💾 저장하기"):
-        # 기존 행 제거
-        card_data = card_data[card_data["filename"] != selected_file]
-        # 새 행 추가
-        new_row = pd.DataFrame([{
-            "filename": selected_file,
-            "upright": new_upright,
-            "reversed": new_reversed
-        }])
-        card_data = pd.concat([card_data, new_row], ignore_index=True)
-        save_card_data(card_data)
-        st.success("카드 해석이 저장되었습니다.")
-
 # --- 타로 모드 선택 ---
 st.markdown("---")
 st.subheader("🔮 타로 모드 선택")
@@ -180,6 +142,7 @@ if mode == "3카드 보기":
     if st.button("🔮 3장 뽑기"):
         st.session_state.cards = draw_cards(3)
         st.session_state.subcards = {}
+        st.session_state.advice_for_three_cards = None
 
     if st.session_state.cards:
         cols = st.columns(3)
@@ -190,6 +153,17 @@ if mode == "3카드 보기":
                 st.markdown(get_card_meaning(card_data, file, direction))
                 if direction == "역방향":
                     handle_subcard(file, exclude=selected_files)
+
+        if st.button("💡 조언카드 보기"):
+            used = [f for f, _ in st.session_state.cards]
+            st.session_state.advice_for_three_cards = draw_cards(1, exclude=used)[0]
+
+        if st.session_state.advice_for_three_cards:
+            file, direction = st.session_state.advice_for_three_cards
+            st.markdown("---")
+            st.markdown("### 💡 조언카드")
+            show_card(file, direction, width=300)
+            st.markdown(get_card_meaning(card_data, file, direction))
 
 elif mode == "원카드":
     if st.button("✨ 한 장 뽑기"):
