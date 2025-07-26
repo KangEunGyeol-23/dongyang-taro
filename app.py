@@ -161,14 +161,102 @@ mode = st.radio("모드를 선택하세요", ["3카드 보기", "원카드", "�
 # 카드 데이터 불러오기
 card_data = load_card_data()
 
+# 보조카드 표시 함수
+def handle_subcard(file, exclude):
+    if file in st.session_state.subcards:
+        sub_file, sub_dir = st.session_state.subcards[file]
+        show_card(sub_file, sub_dir, width=150)
+        st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+    else:
+        if st.button("🔁 보조카드 보기", key=f"subcard_btn_{file}"):
+            subcard = draw_cards(1, exclude=exclude + list(st.session_state.subcards.keys()))[0]
+            st.session_state.subcards[file] = subcard
+            sub_file, sub_dir = subcard
+            show_card(sub_file, sub_dir, width=150)
+            st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
+
 # 모드별 기능 연결
 if mode == "3카드 보기":
-    st.write("3카드 기능 연결 예정")
+    if st.button("🔮 3장 뽑기"):
+        st.session_state.cards = draw_cards(3)
+        st.session_state.subcards = {}
+
+    if st.session_state.cards:
+        cols = st.columns(3)
+        selected_files = [f for f, _ in st.session_state.cards]
+        for i, (file, direction) in enumerate(st.session_state.cards):
+            with cols[i]:
+                show_card(file, direction)
+                st.markdown(get_card_meaning(card_data, file, direction))
+                if direction == "역방향":
+                    handle_subcard(file, exclude=selected_files)
+
 elif mode == "원카드":
-    st.write("원카드 기능 연결 예정")
+    if st.button("✨ 한 장 뽑기"):
+        st.session_state.card = draw_cards(1)[0]
+        st.session_state.subcards = {}
+
+    if st.session_state.card:
+        file, direction = st.session_state.card
+        show_card(file, direction, width=300)
+        st.markdown(get_card_meaning(card_data, file, direction))
+        if direction == "역방향":
+            handle_subcard(file, exclude=[file])
+
 elif mode == "오늘의조언카드":
-    st.write("오늘의 조언카드 기능 연결 예정")
+    if st.button("🌿 오늘의 조언카드"):
+        st.session_state.adv_card = draw_cards(1)[0]
+        st.session_state.subcards = {}
+
+    if st.session_state.adv_card:
+        file, direction = st.session_state.adv_card
+        show_card(file, direction, width=300)
+        st.markdown(get_card_meaning(card_data, file, direction))
+        if direction == "역방향":
+            handle_subcard(file, exclude=[file])
+
 elif mode == "양자택일":
-    st.write("양자택일 기능 연결 예정")
+    q1 = st.text_input("선택1 질문 입력", key="q1")
+    q2 = st.text_input("선택2 질문 입력", key="q2")
+
+    if q1 and q2:
+        if st.button("🔍 선택별 카드 뽑기"):
+            st.session_state.choice_cards = draw_cards(2)
+
+    if st.session_state.choice_cards:
+        cols = st.columns(2)
+        selected_files = [f for f, _ in st.session_state.choice_cards]
+        for i, (file, direction) in enumerate(st.session_state.choice_cards):
+            with cols[i]:
+                show_card(file, direction, width=200)
+                st.markdown(f"**선택{i+1}**")
+                st.markdown(f"질문: {q1 if i == 0 else q2}")
+                st.markdown(get_card_meaning(card_data, file, direction))
+
+        if st.button("🧭 최종 결론 카드 보기"):
+            used = [f for f, _ in st.session_state.choice_cards]
+            st.session_state.final_choice_card = draw_cards(1, exclude=used)[0]
+
+    if st.session_state.final_choice_card:
+        file, direction = st.session_state.final_choice_card
+        st.markdown("---")
+        st.markdown("### 🏁 최종 결론 카드")
+        show_card(file, direction, width=300)
+        st.markdown(get_card_meaning(card_data, file, direction))
+
 elif mode == "12개월운보기 (월별)":
-    st.write("12개월 카드 기능 연결 예정")
+    selected_month = st.selectbox("현재 월을 선택하세요", list(range(1, 13)))
+    if st.button("🗓️ 12개월 운세 보기"):
+        st.session_state.monthly_cards = draw_cards(12)
+
+    if st.session_state.monthly_cards:
+        month_sequence = get_month_sequence(selected_month)
+        cols = st.columns(3)
+        for i, (file, direction) in enumerate(st.session_state.monthly_cards):
+            col = cols[i % 3]
+            with col:
+                st.markdown(f"**📅 {month_sequence[i]}월**")
+                show_card(file, direction, width=180)
+                st.markdown(get_card_meaning(card_data, file, direction))
+                if direction == "역방향":
+                    handle_subcard(file, exclude=[f for f, _ in st.session_state.monthly_cards])
