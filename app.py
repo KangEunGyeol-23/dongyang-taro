@@ -102,7 +102,7 @@ if not (is_admin or is_user):
 
 st.set_page_config(page_title="동양타로", layout="centered")
 st.title("🌓 동양타로")
-st.markdown("한 장의 카드가 내 마음을 말하다")
+st.markdown("진심으로 물어보세요. 명확한 답이 보입니다. ")
 st.success(f"{user_id}님 환영합니다.")
 
 if st.button("🏠 처음으로"):
