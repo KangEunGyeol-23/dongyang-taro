@@ -112,7 +112,7 @@ if st.button("🏠 처음으로"):
 
 # --- 카드 기능 모드 ---
 st.subheader("🔮 타로 뽑기")
-mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일", "월별운세"])
+mode = st.radio("모드 선택", ["3카드 보기", "원카드", "조언카드", "양자택일", "12개월운보기 (월별)"])
 card_data = load_card_data()
 
 # 보조카드 표시 함수
@@ -129,7 +129,7 @@ def handle_subcard(file, exclude):
             show_card(sub_file, sub_dir, width=150)
             st.markdown(get_card_meaning(card_data, sub_file, sub_dir))
 
-if mode == "월별운세":
+if mode == "12개월운보기 (월별)":
     selected_month = st.selectbox("현재 월을 선택하세요", list(range(1, 13)))
     if st.button("🗓️ 12개월 운세 보기"):
         st.session_state.monthly_cards = draw_cards(12)
