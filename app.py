@@ -62,6 +62,8 @@ if "adv_card" not in st.session_state:
     st.session_state.adv_card = None
 if "card" not in st.session_state:
     st.session_state.card = None
+if "advice_for_three_cards" not in st.session_state:
+    st.session_state.advice_for_three_cards = None
 
 # 로그인
 if not st.session_state.login:
@@ -123,6 +125,7 @@ if mode == "3카드 보기":
     if st.button("🔮 3장 뽑기"):
         st.session_state.cards = draw_cards(3)
         st.session_state.subcards = {}
+        st.session_state.advice_for_three_cards = draw_cards(1, exclude=[f for f, _ in st.session_state.cards])[0]
 
     if st.session_state.cards:
         cols = st.columns(3)
@@ -133,6 +136,12 @@ if mode == "3카드 보기":
                 st.markdown(get_card_meaning(card_data, file, direction))
                 if direction == "역방향":
                     handle_subcard(file, exclude=selected_files)
+
+        st.markdown("---")
+        st.markdown("### 💡 추가 조언 카드")
+        adv_file, adv_dir = st.session_state.advice_for_three_cards
+        show_card(adv_file, adv_dir, width=200)
+        st.markdown(get_card_meaning(card_data, adv_file, adv_dir))
 
 elif mode == "원카드":
     if st.button("✨ 한 장 뽑기"):
