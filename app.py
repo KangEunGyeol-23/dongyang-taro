@@ -233,6 +233,14 @@ if "show_advice_card" not in st.session_state:
 if "final_choice_card" not in st.session_state:
     st.session_state.final_choice_card = None
 
+# URL 파라미터에서 사용자 ID 확인
+query_params = st.query_params
+if "user" in query_params and not st.session_state.login:
+    user_from_url = query_params["user"]
+    if user_from_url in ADMIN_IDS or user_from_url in USER_IDS:
+        st.session_state.login = user_from_url
+        log_login(user_from_url)
+
 # 로그인 화면
 if not st.session_state.login:
     st.markdown('<h1 style="text-align: center; color: #ffd700; font-size: 3rem; margin-bottom: 2rem;">🌓 동양타로</h1>', unsafe_allow_html=True)
