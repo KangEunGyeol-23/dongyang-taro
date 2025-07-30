@@ -113,27 +113,32 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
     }
     
-    /* 라디오 버튼 옵션들 - 흰색 글씨 */
+    /* 라디오 버튼 옵션들 - 선명한 흰색 글씨 */
     .stRadio > div > div > label {
         color: #ffffff !important;
-        font-size: 1.2rem !important;
-        font-weight: bold !important;
-        padding: 0.8rem 1.5rem !important;
-        margin: 0.3rem !important;
-        background: rgba(255, 215, 0, 0.15) !important;
-        border-radius: 25px !important;
-        border: 2px solid rgba(255, 215, 0, 0.4) !important;
+        font-size: 1.3rem !important;
+        font-weight: 900 !important;
+        padding: 1rem 2rem !important;
+        margin: 0.4rem !important;
+        background: rgba(40, 40, 60, 0.8) !important;
+        border-radius: 30px !important;
+        border: 3px solid rgba(255, 215, 0, 0.6) !important;
         transition: all 0.3s ease !important;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 1) !important;
         display: inline-block !important;
+        letter-spacing: 0.5px !important;
+        text-rendering: optimizeLegibility !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
     }
     
     .stRadio > div > div > label:hover {
-        background: rgba(255, 215, 0, 0.25) !important;
+        background: rgba(255, 215, 0, 0.2) !important;
         border-color: #ffd700 !important;
         color: #ffffff !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4) !important;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 1) !important;
     }
     
     /* 선택된 라디오 버튼 */
@@ -142,23 +147,30 @@ st.markdown("""
         background-color: #ffd700 !important;
     }
     
-    /* 라디오 버튼 텍스트 강제 흰색 */
+    /* 라디오 버튼 텍스트 강제 선명한 흰색 */
     .stRadio > div > div > label > div[data-testid="stMarkdownContainer"] > p {
         color: #ffffff !important;
-        font-weight: bold !important;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+        font-weight: 900 !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 1) !important;
+        letter-spacing: 0.5px !important;
+        font-family: 'Arial Black', Arial, sans-serif !important;
+        text-rendering: optimizeLegibility !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
     }
     
     /* 선택된 상태일 때 */
     .stRadio > div > div > label:has(input:checked) {
-        background: rgba(255, 215, 0, 0.3) !important;
+        background: rgba(255, 215, 0, 0.25) !important;
         border-color: #ffd700 !important;
         color: #ffffff !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
     }
     
     .stRadio > div > div > label:has(input:checked) > div[data-testid="stMarkdownContainer"] > p {
         color: #ffffff !important;
-        font-weight: bold !important;
+        font-weight: 900 !important;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 1) !important;
     }
     
     /* 텍스트 입력 스타일 - 검정색 글씨 버전 */
