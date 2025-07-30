@@ -538,12 +538,12 @@ elif st.session_state.page == "oriental_main":
                 st.session_state.zodiac_reading = zodiac_list[7]
                 st.rerun()
         
-        # 세 번째 줄
+   # 세 번째 줄
         col9, col10, col11, col12 = st.columns(4)
         with col9:
             if st.button(zodiac_list[8], key="zodiac_8"): # 궁수자리
                 st.session_state.zodiac_reading = zodiac_list[8]
                 st.rerun()
-     with col10:
-    if st.button(zodiac_list[9], key="zodiac_9"):  # 염소자리
-        pass
+        with col10:  # 이 줄을 with col9:와 같은 수준으로
+            if st.button(zodiac_list[9], key="zodiac_9"):  # 염소자리
+                pass
