@@ -515,7 +515,7 @@ elif st.session_state.page == "oriental_main":
     
     mode = st.radio(
         "원하는 모드를 선택하세요", 
-        ["3카드 보기", "원카드", "오늘의조언카드", "양자택일", "황도12궁 점성술", "12개월운보기 (월별)"],
+        ["3카드 보기", "원카드", "오늘의조언카드", "양자택일", "별자리 리딩서클", "12개월운보기 (월별)"],
         horizontal=True
     )
     
@@ -632,9 +632,9 @@ elif st.session_state.page == "oriental_main":
                 show_card(file, direction, width=300)
                 st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
 
-    # 황도12궁 점성술 모드 추가
-    elif mode == "황도12궁 점성술":
-        st.markdown("### 🌟 황도12궁 점성술 리딩")
+    # 별자리 리딩서클 모드 (새로 추가)
+    elif mode == "별자리 리딩서클":
+        st.markdown("### 🌟 별자리 리딩서클")
         st.markdown("원하는 별자리를 선택하거나 전체 운세를 확인해보세요")
         
         # 별자리 데이터
@@ -771,7 +771,7 @@ elif st.session_state.page == "oriental_main":
                     st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
         
         # 초기화 버튼
-        if st.button("🔄 점성술 리딩 초기화"):
+        if st.button("🔄 별자리 리딩 초기화"):
             if "zodiac_reading" in st.session_state:
                 del st.session_state.zodiac_reading
             if "zodiac_cards" in st.session_state:
