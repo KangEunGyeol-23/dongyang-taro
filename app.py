@@ -99,31 +99,66 @@ st.markdown("""
     
     /* 라디오 버튼 스타일 */
     .stRadio > div {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.1);
         padding: 1.5rem;
         border-radius: 15px;
-        border: 1px solid rgba(255, 215, 0, 0.2);
+        border: 1px solid rgba(255, 215, 0, 0.3);
         backdrop-filter: blur(10px);
     }
     
     .stRadio > div > label {
         color: #ffd700 !important;
-        font-size: 1.2rem;
-        font-weight: bold;
+        font-size: 1.3rem !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
+    }
+    
+    /* 라디오 버튼 옵션들 */
+    .stRadio > div > div > label {
+        color: #ffffff !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 1rem !important;
+        margin: 0.2rem !important;
+        background: rgba(255, 215, 0, 0.1) !important;
+        border-radius: 25px !important;
+        border: 1px solid rgba(255, 215, 0, 0.3) !important;
+        transition: all 0.3s ease !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    .stRadio > div > div > label:hover {
+        background: rgba(255, 215, 0, 0.2) !important;
+        border-color: #ffd700 !important;
+        color: #ffd700 !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* 선택된 라디오 버튼 */
+    .stRadio > div > div > label > div[data-testid="stMarkdownContainer"] {
+        color: inherit !important;
     }
     
     /* 텍스트 입력 스타일 */
     .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid rgba(255, 215, 0, 0.3);
-        border-radius: 10px;
-        color: white;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: 2px solid rgba(255, 215, 0, 0.5) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
         backdrop-filter: blur(5px);
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #ffd700;
-        box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        border-color: #ffd700 !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+        background: rgba(255, 255, 255, 0.25) !important;
+    }
+    
+    .stTextInput > div > div > input::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+        opacity: 1 !important;
     }
     
     /* 셀렉트박스 스타일 */
