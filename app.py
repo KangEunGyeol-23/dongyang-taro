@@ -544,6 +544,6 @@ elif st.session_state.page == "oriental_main":
             if st.button(zodiac_list[8], key="zodiac_8"): # 궁수자리
                 st.session_state.zodiac_reading = zodiac_list[8]
                 st.rerun()
-        with col10:
-            if st.button(zodiac_list[9], key="zodiac_9"):  # 염소자리
-    pass
+     with col10:
+    if st.button(zodiac_list[9], key="zodiac_9"):  # 염소자리
+        pass
