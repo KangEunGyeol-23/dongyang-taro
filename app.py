@@ -139,26 +139,36 @@ st.markdown("""
         color: inherit !important;
     }
     
-    /* 텍스트 입력 스타일 */
+    /* 텍스트 입력 스타일 - 검정색 글씨 버전 */
     .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.2) !important;
-        border: 2px solid rgba(255, 215, 0, 0.5) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 3px solid #ffd700 !important;
         border-radius: 10px !important;
-        color: #ffffff !important;
+        color: #000000 !important;
         backdrop-filter: blur(5px);
-        font-size: 1.1rem !important;
-        font-weight: 500 !important;
+        font-size: 1.2rem !important;
+        font-weight: bold !important;
+        padding: 12px 15px !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #ffd700 !important;
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
-        background: rgba(255, 255, 255, 0.25) !important;
+        border-color: #ffed4e !important;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8) !important;
+        background: rgba(255, 255, 255, 1) !important;
+        color: #000000 !important;
+        outline: none !important;
     }
     
     .stTextInput > div > div > input::placeholder {
-        color: rgba(255, 255, 255, 0.7) !important;
+        color: rgba(0, 0, 0, 0.6) !important;
         opacity: 1 !important;
+        font-weight: normal !important;
+    }
+    
+    /* 입력창이 활성화되었을 때 */
+    .stTextInput > div > div > input:not(:placeholder-showed) {
+        color: #000000 !important;
+        background: rgba(255, 255, 255, 1) !important;
     }
     
     /* 셀렉트박스 스타일 */
@@ -266,7 +276,25 @@ st.markdown("""
     
     /* 텍스트 색상 개선 */
     .stMarkdown {
-        color: #e0e0e0;
+        color: #e0e0e0 !important;
+    }
+    
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5 {
+        color: #ffd700 !important;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
+    }
+    
+    .stMarkdown p {
+        color: #ffffff !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* 라벨 텍스트 개선 */
+    .stTextInput > label, .stSelectbox > label, .stRadio > label {
+        color: #ffd700 !important;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.3) !important;
     }
     
     /* 특별한 텍스트 스타일 */
