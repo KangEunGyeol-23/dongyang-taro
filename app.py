@@ -496,7 +496,7 @@ if is_user or is_admin:
             st.markdown('<div class="card-container">', unsafe_allow_html=True)
 
     # 기본 안내 메시지 (카드를 뽑기 전)
-    if not st.session_state.cards and not st.session_state.card and not st.session_state.adv_card and not st.session_state.choice_cards and not st.session_state.monthly_cards:
+    if not any([st.session_state.cards, st.session_state.card, st.session_state.adv_card, st.session_state.choice_cards, st.session_state.monthly_cards]):
         st.markdown("""
         <div style="text-align: center; padding: 2rem;">
             <p style="color: #ffd700; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">💫 질문을 마음속으로 떠올려보세요</p>
