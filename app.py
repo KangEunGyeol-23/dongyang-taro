@@ -420,15 +420,36 @@ if is_user or is_admin:
 
         if st.session_state.monthly_cards:
             month_sequence = get_month_sequence(selected_month)
-            cols = st.columns(3)
-            for i, (file, direction) in enumerate(st.session_state.monthly_cards):
-                col = cols[i % 3]
-                with col:
-                    st.markdown(f"**📅 {month_sequence[i]}월**")
-                    show_card(file, direction, width=180)
-                    st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
-                    if direction == "역방향":
-                        handle_subcard(file, exclude=[f for f, _ in st.session_state.monthly_cards])
+            
+            # 월별로 순서대로 표시 (3개씩 4줄)
+            for row in range(4):  # 4줄
+                cols = st.columns(3)  # 3개씩
+                for col_idx in range(3):  # 각 줄의 3개
+                    card_idx = row * 3 + col_idx  # 0,1,2,3,4,5,6,7,8,9,10,11 순서
+                    if card_idx < 12:
+                        file, direction = st.session_state.monthly_cards[card_idx]
+                        month_num = month_sequence[card_idx]
+                        
+                        with cols[col_idx]:
+                            st.markdown(f"**📅 {month_num}월**")
+                            st.markdown(f"**{direction}**: 등록된 해석이 없습니다." if not card_data.empty else f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
+                            show_card(file, direction, width=180)
+                            
+                            # 역방향일 때만 보조카드 버튼 (카드 아래에 배치)
+                            if direction == "역방향":
+                                if st.button("🔁 보조카드", key=f"monthly_subcard_{card_idx}"):
+                                    exclude_files = [f for f, _ in st.session_state.monthly_cards]
+                                    subcard = draw_cards(1, exclude=exclude_files)[0]
+                                    st.session_state[f"monthly_sub_{card_idx}"] = subcard
+                                    st.rerun()
+                                
+                                # 보조카드가 있으면 표시
+                                if f"monthly_sub_{card_idx}" in st.session_state:
+                                    sub_file, sub_dir = st.session_state[f"monthly_sub_{card_idx}"]
+                                    st.markdown("**🔁 보조카드:**")
+                                    show_card(sub_file, sub_dir, width=120)
+                                    st.markdown(f"**{sub_dir}**: {get_card_meaning(card_data, sub_file, sub_dir)}")
                 
-                if (i + 1) % 3 == 0:
+                # 각 줄 사이에 간격 추가
+                if row < 3:  # 마지막 줄이 아닐 때만
                     st.markdown("<br>", unsafe_allow_html=True)
