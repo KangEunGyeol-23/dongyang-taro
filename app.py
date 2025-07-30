@@ -113,30 +113,52 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
     }
     
-    /* 라디오 버튼 옵션들 */
+    /* 라디오 버튼 옵션들 - 흰색 글씨 */
     .stRadio > div > div > label {
         color: #ffffff !important;
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        padding: 0.5rem 1rem !important;
-        margin: 0.2rem !important;
-        background: rgba(255, 215, 0, 0.1) !important;
+        font-size: 1.2rem !important;
+        font-weight: bold !important;
+        padding: 0.8rem 1.5rem !important;
+        margin: 0.3rem !important;
+        background: rgba(255, 215, 0, 0.15) !important;
         border-radius: 25px !important;
-        border: 1px solid rgba(255, 215, 0, 0.3) !important;
+        border: 2px solid rgba(255, 215, 0, 0.4) !important;
         transition: all 0.3s ease !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+        display: inline-block !important;
     }
     
     .stRadio > div > div > label:hover {
-        background: rgba(255, 215, 0, 0.2) !important;
+        background: rgba(255, 215, 0, 0.25) !important;
         border-color: #ffd700 !important;
-        color: #ffd700 !important;
-        transform: translateY(-1px) !important;
+        color: #ffffff !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3) !important;
     }
     
     /* 선택된 라디오 버튼 */
-    .stRadio > div > div > label > div[data-testid="stMarkdownContainer"] {
-        color: inherit !important;
+    .stRadio > div > div > label[data-baseweb="radio"] > div:first-child {
+        border-color: #ffd700 !important;
+        background-color: #ffd700 !important;
+    }
+    
+    /* 라디오 버튼 텍스트 강제 흰색 */
+    .stRadio > div > div > label > div[data-testid="stMarkdownContainer"] > p {
+        color: #ffffff !important;
+        font-weight: bold !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+    }
+    
+    /* 선택된 상태일 때 */
+    .stRadio > div > div > label:has(input:checked) {
+        background: rgba(255, 215, 0, 0.3) !important;
+        border-color: #ffd700 !important;
+        color: #ffffff !important;
+    }
+    
+    .stRadio > div > div > label:has(input:checked) > div[data-testid="stMarkdownContainer"] > p {
+        color: #ffffff !important;
+        font-weight: bold !important;
     }
     
     /* 텍스트 입력 스타일 - 검정색 글씨 버전 */
