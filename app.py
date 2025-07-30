@@ -47,114 +47,6 @@ st.markdown("""
         margin-bottom: 2rem;
     }
     
-    /* 카드 선택 그리드 */
-    .card-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 20px;
-        max-width: 900px;
-        margin: 0 auto 2rem auto;
-    }
-    
-    /* 개별 카드 스타일 */
-    .tarot-card {
-        background: white;
-        border-radius: 10px;
-        padding: 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 3px solid #ddd;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        overflow: hidden;
-        aspect-ratio: 2/3;
-        position: relative;
-    }
-    
-    .tarot-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
-        border-color: #ffd700;
-    }
-    
-    .card-image-area {
-        height: 80%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .card-title-area {
-        height: 20%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: #333;
-        background: #f8f9fa;
-        border-top: 1px solid #ddd;
-    }
-    
-    /* 각 카드별 배경 */
-    .oriental-card {
-        background: linear-gradient(135deg, #2d1b69, #11052c);
-    }
-    
-    .oriental-card::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(90deg, #fff 50%, #000 50%);
-    }
-    
-    .universal-card {
-        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-        background-image: 
-            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3) 2px, transparent 3px),
-            radial-gradient(circle at 70% 50%, rgba(255,255,255,0.4) 3px, transparent 4px),
-            radial-gradient(circle at 50% 80%, rgba(255,255,255,0.2) 2px, transparent 3px);
-    }
-    
-    .saju-card {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        color: #ffd700;
-        font-size: 2rem;
-        font-weight: bold;
-    }
-    
-    .saju-card::after {
-        content: '福';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 2.5rem;
-        color: #ffd700;
-    }
-    
-    .horoscope-card {
-        background: linear-gradient(135deg, #7c2d12, #ea580c);
-        background-image: 
-            conic-gradient(from 0deg at 50% 50%, 
-                transparent 30deg, 
-                rgba(255,215,0,0.3) 60deg, 
-                transparent 90deg);
-    }
-    
-    .complex-card {
-        background: linear-gradient(135deg, #064e3b, #059669);
-        background-image: 
-            linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%);
-        background-size: 20px 20px;
-    }
-    
     /* 텍스트 입력 스타일 */
     .stTextInput > div > div > input {
         background: rgba(255, 255, 255, 0.95) !important;
@@ -201,26 +93,6 @@ st.markdown("""
     .stButton > button:hover {
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4) !important;
-    }
-    
-    /* 준비중 메시지 */
-    .coming-soon {
-        background: rgba(255, 165, 0, 0.1);
-        border: 2px solid #ffa500;
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-        margin: 2rem 0;
-    }
-    
-    .coming-soon h3 {
-        color: #ffa500;
-        margin-bottom: 1rem;
-    }
-    
-    .coming-soon p {
-        color: #e0e0e0;
-        line-height: 1.6;
     }
     
     /* 배경 별들 */
@@ -354,7 +226,7 @@ if "final_choice_card" not in st.session_state:
 if not st.session_state.page:
     st.session_state.page = "main"
 
-# 메인 페이지 (카드 선택)
+# ===== 메인 페이지 (카드 선택) =====
 if st.session_state.page == "main":
     st.markdown('<h1 class="main-title">🔮 타로세계</h1>', unsafe_allow_html=True)
     
@@ -372,46 +244,7 @@ if st.session_state.page == "main":
         if st.button("🌓 동양타로", key="select_oriental", use_container_width=True):
             st.session_state.page = "oriental_login"
             st.session_state.selected_deck = "oriental"
-    elif mode == "12개월운보기 (월별)":
-        selected_month = st.selectbox("현재 월을 선택하세요", list(range(1, 13)), index=datetime.datetime.now().month-1)
-        if st.button("🗓️ 12개월 운세 보기"):
-            st.session_state.monthly_cards = draw_cards(12)
-
-        if st.session_state.monthly_cards:
-            month_sequence = get_month_sequence(selected_month)
-            
-            # 월별로 순서대로 표시 (3개씩 4줄)
-            for row in range(4):  # 4줄
-                cols = st.columns(3)  # 3개씩
-                for col_idx in range(3):  # 각 줄의 3개
-                    card_idx = row * 3 + col_idx  # 0,1,2,3,4,5,6,7,8,9,10,11 순서
-                    if card_idx < 12:
-                        file, direction = st.session_state.monthly_cards[card_idx]
-                        month_num = month_sequence[card_idx]
-                        
-                        with cols[col_idx]:
-                            st.markdown(f"**📅 {month_num}월**")
-                            st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
-                            show_card(file, direction, width=180)
-                            
-                            # 역방향일 때만 보조카드 버튼
-                            if direction == "역방향":
-                                if st.button("🔁 보조카드", key=f"monthly_subcard_{card_idx}"):
-                                    exclude_files = [f for f, _ in st.session_state.monthly_cards]
-                                    subcard = draw_cards(1, exclude=exclude_files)[0]
-                                    st.session_state[f"monthly_sub_{card_idx}"] = subcard
-                                    st.rerun()
-                                
-                                # 보조카드가 있으면 표시
-                                if f"monthly_sub_{card_idx}" in st.session_state:
-                                    sub_file, sub_dir = st.session_state[f"monthly_sub_{card_idx}"]
-                                    st.markdown("**🔁 보조카드:**")
-                                    show_card(sub_file, sub_dir, width=120)
-                                    st.markdown(f"**{sub_dir}**: {get_card_meaning(card_data, sub_file, sub_dir)}")
-                
-                # 각 줄 사이에 간격 추가
-                if row < 3:  # 마지막 줄이 아닐 때만
-                    st.markdown("<br>", unsafe_allow_html=True)
+            st.rerun()
     
     with col2:
         if st.button("🌟 유니버셜타로", key="select_universal", use_container_width=True):
@@ -431,7 +264,7 @@ if st.session_state.page == "main":
     if st.button("🔮 복합카드", key="select_complex", use_container_width=True):
         st.error("🚧 준비중입니다")
 
-# 동양타로 로그인 페이지
+# ===== 동양타로 로그인 페이지 =====
 elif st.session_state.page == "oriental_login":
     st.markdown('<h1 class="main-title">🌓 동양타로</h1>', unsafe_allow_html=True)
     
@@ -463,7 +296,7 @@ elif st.session_state.page == "oriental_login":
             st.session_state.page = "main"
             st.rerun()
 
-# 동양타로 메인 (기존 타로 앱)
+# ===== 동양타로 메인 (실제 타로 앱) =====
 elif st.session_state.page == "oriental_main":
     user_id = st.session_state.login
     is_admin = user_id in ADMIN_IDS
@@ -543,6 +376,7 @@ elif st.session_state.page == "oriental_main":
         </div>
         """, unsafe_allow_html=True)
 
+    # ===== 3카드 보기 =====
     if mode == "3카드 보기":
         if st.button("🔮 3장 뽑기", key="draw_three"):
             st.session_state.cards = draw_cards(3)
@@ -570,6 +404,7 @@ elif st.session_state.page == "oriental_main":
                 show_card(file, direction, width=300)
                 st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
 
+    # ===== 원카드 =====
     elif mode == "원카드":
         if st.button("✨ 한 장 뽑기", key="draw_one"):
             st.session_state.card = draw_cards(1)[0]
@@ -584,6 +419,7 @@ elif st.session_state.page == "oriental_main":
                 if direction == "역방향":
                     handle_subcard(file, exclude=[file])
 
+    # ===== 오늘의조언카드 =====
     elif mode == "오늘의조언카드":
         if st.button("🌿 오늘의 조언카드", key="draw_advice"):
             st.session_state.adv_card = draw_cards(1)[0]
@@ -598,6 +434,7 @@ elif st.session_state.page == "oriental_main":
                 if direction == "역방향":
                     handle_subcard(file, exclude=[file])
 
+    # ===== 양자택일 =====
     elif mode == "양자택일":
         col1, col2 = st.columns(2)
         with col1:
@@ -632,7 +469,7 @@ elif st.session_state.page == "oriental_main":
                 show_card(file, direction, width=300)
                 st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
 
-    # 별자리 리딩서클 모드 (새로 추가)
+    # ===== 별자리 리딩서클 =====
     elif mode == "별자리 리딩서클":
         st.markdown("### 🌟 별자리 리딩서클")
         st.markdown("원하는 별자리를 선택하거나 전체 운세를 확인해보세요")
@@ -709,115 +546,3 @@ elif st.session_state.page == "oriental_main":
                 st.rerun()
         with col10:
             if st.button(zodiac_list[9], key="zodiac_9"): # 염소자리
-                st.session_state.zodiac_reading = zodiac_list[9]
-                st.rerun()
-        with col11:
-            if st.button(zodiac_list[10], key="zodiac_10"): # 물병자리
-                st.session_state.zodiac_reading = zodiac_list[10]
-                st.rerun()
-        with col12:
-            if st.button(zodiac_list[11], key="zodiac_11"): # 물고기자리
-                st.session_state.zodiac_reading = zodiac_list[11]
-                st.rerun()
-        
-        # 선택된 별자리 결과 표시
-        if "zodiac_reading" in st.session_state and st.session_state.zodiac_reading:
-            st.markdown("---")
-            
-            if st.session_state.zodiac_reading == "all":
-                st.markdown("### 🌟 전체 12별자리 운세")
-                
-                # 12개 별자리 카드 뽑기
-                if "zodiac_cards" not in st.session_state:
-                    st.session_state.zodiac_cards = draw_cards(12)
-                
-                # 3x4 그리드로 표시
-                for row in range(3):
-                    cols = st.columns(4)
-                    for col_idx in range(4):
-                        card_idx = row * 4 + col_idx
-                        if card_idx < 12:
-                            zodiac_name = zodiac_list[card_idx]
-                            zodiac_info = zodiac_signs[zodiac_name]
-                            file, direction = st.session_state.zodiac_cards[card_idx]
-                            
-                            with cols[col_idx]:
-                                st.markdown(f"**{zodiac_name}**")
-                                st.markdown(f"*{zodiac_info['dates']}*")
-                                show_card(file, direction, width=120)
-                                st.markdown(f"**{direction}**")
-                                st.markdown(f"{zodiac_info['meaning']}")
-                                st.markdown(f"🌟 {get_card_meaning(card_data, file, direction)}")
-            
-            else:
-                # 개별 별자리 리딩
-                selected_zodiac = st.session_state.zodiac_reading
-                zodiac_info = zodiac_signs[selected_zodiac]
-                
-                st.markdown(f"### {selected_zodiac} 운세")
-                
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
-                    st.markdown(f"**날짜**: {zodiac_info['dates']}")
-                    st.markdown(f"**원소**: {zodiac_info['element']}")
-                    st.markdown(f"**의미**: {zodiac_info['meaning']}")
-                    
-                    # 해당 별자리 카드 뽑기
-                    if f"zodiac_card_{selected_zodiac}" not in st.session_state:
-                        st.session_state[f"zodiac_card_{selected_zodiac}"] = draw_cards(1)[0]
-                    
-                    file, direction = st.session_state[f"zodiac_card_{selected_zodiac}"]
-                    show_card(file, direction, width=250)
-                    st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
-        
-        # 초기화 버튼
-        if st.button("🔄 별자리 리딩 초기화"):
-            if "zodiac_reading" in st.session_state:
-                del st.session_state.zodiac_reading
-            if "zodiac_cards" in st.session_state:
-                del st.session_state.zodiac_cards
-            # 개별 별자리 카드들도 초기화
-            for zodiac in zodiac_signs.keys():
-                key = f"zodiac_card_{zodiac}"
-                if key in st.session_state:
-                    del st.session_state[key]
-            st.rerun()
-        selected_month = st.selectbox("현재 월을 선택하세요", list(range(1, 13)), index=datetime.datetime.now().month-1)
-        if st.button("🗓️ 12개월 운세 보기"):
-            st.session_state.monthly_cards = draw_cards(12)
-
-        if st.session_state.monthly_cards:
-            month_sequence = get_month_sequence(selected_month)
-            
-            # 월별로 순서대로 표시 (3개씩 4줄)
-            for row in range(4):  # 4줄
-                cols = st.columns(3)  # 3개씩
-                for col_idx in range(3):  # 각 줄의 3개
-                    card_idx = row * 3 + col_idx  # 0,1,2,3,4,5,6,7,8,9,10,11 순서
-                    if card_idx < 12:
-                        file, direction = st.session_state.monthly_cards[card_idx]
-                        month_num = month_sequence[card_idx]
-                        
-                        with cols[col_idx]:
-                            st.markdown(f"**📅 {month_num}월**")
-                            st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
-                            show_card(file, direction, width=180)
-                            
-                            # 역방향일 때만 보조카드 버튼
-                            if direction == "역방향":
-                                if st.button("🔁 보조카드", key=f"monthly_subcard_{card_idx}"):
-                                    exclude_files = [f for f, _ in st.session_state.monthly_cards]
-                                    subcard = draw_cards(1, exclude=exclude_files)[0]
-                                    st.session_state[f"monthly_sub_{card_idx}"] = subcard
-                                    st.rerun()
-                                
-                                # 보조카드가 있으면 표시
-                                if f"monthly_sub_{card_idx}" in st.session_state:
-                                    sub_file, sub_dir = st.session_state[f"monthly_sub_{card_idx}"]
-                                    st.markdown("**🔁 보조카드:**")
-                                    show_card(sub_file, sub_dir, width=120)
-                                    st.markdown(f"**{sub_dir}**: {get_card_meaning(card_data, sub_file, sub_dir)}")
-                
-                # 각 줄 사이에 간격 추가
-                if row < 3:  # 마지막 줄이 아닐 때만
-                    st.markdown("<br>", unsafe_allow_html=True)
