@@ -97,90 +97,43 @@ st.markdown("""
         background: linear-gradient(45deg, #ffed4e, #ffd700);
     }
     
-    /* 라디오 버튼 스타일 - 강력한 override */
-    .stRadio {
-        background: rgba(255, 255, 255, 0.1) !important;
-        padding: 2rem !important;
-        border-radius: 20px !important;
-        border: 2px solid rgba(255, 215, 0, 0.4) !important;
-        backdrop-filter: blur(10px) !important;
+    /* 라디오 버튼 스타일 - 간단하고 깔끔하게 */
+    .stRadio > div {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        backdrop-filter: blur(10px);
     }
     
     .stRadio > div > label {
         color: #ffd700 !important;
-        font-size: 1.5rem !important;
-        font-weight: 900 !important;
-        text-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
-        margin-bottom: 1rem !important;
+        font-size: 1.3rem !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
     }
     
-    /* 모든 라디오 버튼 텍스트를 강제로 선명하게 */
-    .stRadio div[role="radiogroup"] > label,
-    .stRadio div[role="radiogroup"] > label > div,
-    .stRadio div[role="radiogroup"] > label > div > div,
-    .stRadio div[role="radiogroup"] > label > div > div > p,
-    .stRadio div[role="radiogroup"] > label span,
-    .stRadio div[role="radiogroup"] > label p {
+    /* 라디오 버튼 텍스트만 선명하게 */
+    .stRadio label {
         color: #ffffff !important;
-        font-size: 1.4rem !important;
-        font-weight: 900 !important;
-        font-family: 'Arial Black', Arial, sans-serif !important;
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 1) !important;
-        letter-spacing: 1px !important;
-        text-rendering: optimizeLegibility !important;
-        -webkit-font-smoothing: antialiased !important;
-        -moz-osx-font-smoothing: grayscale !important;
-        background: rgba(30, 30, 50, 0.9) !important;
-        padding: 1.2rem 2.5rem !important;
-        border-radius: 35px !important;
-        border: 3px solid #ffd700 !important;
-        margin: 0.5rem !important;
-        display: inline-block !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
+        font-size: 1.2rem !important;
+        font-weight: bold !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
     }
     
-    /* 호버 효과 */
-    .stRadio div[role="radiogroup"] > label:hover,
-    .stRadio div[role="radiogroup"] > label:hover > div,
-    .stRadio div[role="radiogroup"] > label:hover > div > div,
-    .stRadio div[role="radiogroup"] > label:hover > div > div > p,
-    .stRadio div[role="radiogroup"] > label:hover span,
-    .stRadio div[role="radiogroup"] > label:hover p {
-        background: rgba(255, 215, 0, 0.3) !important;
+    .stRadio p {
         color: #ffffff !important;
-        transform: translateY(-2px) scale(1.02) !important;
-        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5) !important;
-        border-color: #ffed4e !important;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 1) !important;
+        font-size: 1.2rem !important;
+        font-weight: bold !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
     }
     
-    /* 라디오 버튼 원형 표시 숨기기 */
-    .stRadio div[role="radiogroup"] > label > div:first-child,
-    .stRadio input[type="radio"],
-    .stRadio div[data-baseweb="radio"] {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-    }
-    
-    /* 선택된 상태도 동일하게 */
-    .stRadio div[role="radiogroup"] > label[data-checked="true"],
-    .stRadio div[role="radiogroup"] > label[data-checked="true"] > div,
-    .stRadio div[role="radiogroup"] > label[data-checked="true"] > div > div,
-    .stRadio div[role="radiogroup"] > label[data-checked="true"] > div > div > p,
-    .stRadio div[role="radiogroup"] > label[data-checked="true"] span,
-    .stRadio div[role="radiogroup"] > label[data-checked="true"] p {
-        background: rgba(30, 30, 50, 0.9) !important;
+    /* 모든 라디오 버튼 텍스트 */
+    .stRadio div[role="radiogroup"] label p {
         color: #ffffff !important;
-        border-color: #ffd700 !important;
-    }
-    
-    /* 추가적인 텍스트 선명도 */
-    .stRadio * {
-        color: #ffffff !important;
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 1) !important;
-        font-weight: 900 !important;
+        font-size: 1.2rem !important;
+        font-weight: bold !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
     }
     
     /* 텍스트 입력 스타일 - 검정색 글씨 버전 */
