@@ -479,7 +479,7 @@ if is_admin:
 # --- 공통 카드 기능 모드 ---
 if is_user or is_admin:
     st.markdown("---")
-    st.markdown('<h3 class="golden-text">🔮 카드 모드</h3>', unsafe_allow_html=True)
+    st.subheader("🔮 카드 모드")
     
     mode = st.radio(
         "원하는 모드를 선택하세요", 
