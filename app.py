@@ -494,6 +494,16 @@ if is_user or is_admin:
         if file in st.session_state.subcards:
             sub_file, sub_dir = st.session_state.subcards[file]
             st.markdown('<div class="card-container">', unsafe_allow_html=True)
+
+    # 기본 안내 메시지 (카드를 뽑기 전)
+    if not st.session_state.cards and not st.session_state.card and not st.session_state.adv_card and not st.session_state.choice_cards and not st.session_state.monthly_cards:
+        st.markdown("""
+        <div style="text-align: center; padding: 2rem;">
+            <p style="color: #ffd700; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">💫 질문을 마음속으로 떠올려보세요</p>
+            <p style="color: #e0e0e0; font-size: 1.1rem; margin-bottom: 1.5rem;">궁금한 것을 생각하며 위에서 모드를 선택한 후 카드를 뽑아보세요</p>
+            <div style="font-size: 2rem; opacity: 0.4; letter-spacing: 0.5rem;">🌟✨🔮✨🌟</div>
+        </div>
+        """, unsafe_allow_html=True)
             st.markdown("### 🔁 보조카드")
             show_card(sub_file, sub_dir, width=150)
             st.markdown(f'<div class="card-meaning">{get_card_meaning(card_data, sub_file, sub_dir)}</div>', unsafe_allow_html=True)
