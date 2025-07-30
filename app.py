@@ -281,21 +281,7 @@
             100% { opacity: 1; }
         }
         
-        /* 카드 앞면 */
-        .card-front {
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #333;
-            border: 3px solid #ffd700;
-        }
-        
-        /* 카드 그리드 */
+        /* 카드 정보 */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -336,50 +322,6 @@
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
         
-        /* 양자택일 입력 */
-        .choice-input {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1rem;
-            backdrop-filter: blur(5px);
-        }
-        
-        .choice-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .choice-input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
-        
-        /* 월별 선택 */
-        .month-selector {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .month-select {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1rem;
-            backdrop-filter: blur(5px);
-        }
-        
-        .month-select:focus {
-            outline: none;
-            border-color: #ffd700;
-        }
-        
         /* 홈 버튼 */
         .home-button {
             position: fixed;
@@ -398,6 +340,11 @@
         .home-button:hover {
             background: rgba(255, 215, 0, 0.3);
             transform: scale(1.05);
+        }
+        
+        /* 숨김 클래스 */
+        .hidden {
+            display: none !important;
         }
         
         /* 반응형 디자인 */
@@ -423,34 +370,6 @@
                 width: 120px;
                 height: 180px;
             }
-        }
-        
-        /* 숨김 클래스 */
-        .hidden {
-            display: none !important;
-        }
-        
-        /* 조언 카드 섹션 */
-        .advice-section {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .advice-title {
-            text-align: center;
-            color: #ffd700;
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-        }
-        
-        /* 최종 결론 카드 */
-        .conclusion-section {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 215, 0, 0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
         }
     </style>
 </head>
@@ -501,15 +420,12 @@
         let currentUser = '';
         let currentMode = '';
         let currentCards = [];
-        let subCards = {};
-        let adviceCard = null;
-        let finalChoiceCard = null;
         
         // 관리자 및 사용자 ID
         const ADMIN_IDS = ["cotty23"];
         const USER_IDS = ["cotty00", "teleecho", "37nim", "ckss12"];
         
-        // 임시 카드 데이터 (실제로는 서버에서 가져와야 함)
+        // 임시 카드 데이터
         const cardData = {
             "card1.jpg": { upright: "새로운 시작과 희망을 의미합니다.", reversed: "지연과 좌절을 나타냅니다." },
             "card2.jpg": { upright: "사랑과 조화를 상징합니다.", reversed: "갈등과 오해를 경고합니다." },
@@ -517,6 +433,18 @@
             "card4.jpg": { upright: "지혜와 직관을 의미합니다.", reversed: "혼란과 착각을 경고합니다." },
             "card5.jpg": { upright: "변화와 전환을 나타냅니다.", reversed: "정체와 저항을 의미합니다." }
         };
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            createBackgroundStars();
+            
+            // 로그인 이벤트
+            document.getElementById('loginInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+        });
         
         // 배경 별들 생성
         function createBackgroundStars() {
@@ -532,12 +460,6 @@
         }
         
         // 로그인 처리
-        document.getElementById('loginInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
-        });
-        
         function login() {
             const userId = document.getElementById('loginInput').value.trim();
             if (!userId) return;
@@ -546,10 +468,9 @@
                 currentUser = userId;
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainScreen').classList.remove('hidden');
-                document.getElementById('welcomeMessage').textContent = `${userId}님 환영합니다.`;
+                document.getElementById('welcomeMessage').textContent = userId + '님 환영합니다.';
                 
-                // 로그인 로그 기록 (실제로는 서버에 전송)
-                console.log(`Login: ${userId} at ${new Date()}`);
+                console.log('Login: ' + userId + ' at ' + new Date());
             } else {
                 alert('등록되지 않은 사용자입니다.');
             }
@@ -559,36 +480,35 @@
         function goHome() {
             currentMode = '';
             currentCards = [];
-            subCards = {};
-            adviceCard = null;
-            finalChoiceCard = null;
             
-            // 모든 모드 버튼 비활성화
-            document.querySelectorAll('.mode-btn').forEach(btn => {
+            document.querySelectorAll('.mode-btn').forEach(function(btn) {
                 btn.classList.remove('active');
             });
             
-            // 카드 영역 초기화
-            document.getElementById('cardArea').innerHTML = `
-                <p style="text-align: center; color: #c9b037; font-size: 1.2rem;">위에서 원하는 모드를 선택해주세요</p>
-            `;
+            document.getElementById('cardArea').innerHTML = '<p style="text-align: center; color: #c9b037; font-size: 1.2rem;">위에서 원하는 모드를 선택해주세요</p>';
         }
         
         // 모드 선택
         function selectMode(mode) {
             currentMode = mode;
             
-            // 모든 버튼 비활성화 후 선택된 버튼 활성화
-            document.querySelectorAll('.mode-btn').forEach(btn => {
+            document.querySelectorAll('.mode-btn').forEach(function(btn) {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
             
-            // 카드 영역 초기화
+            // 클릭된 버튼 찾아서 활성화
+            const buttons = document.querySelectorAll('.mode-btn');
+            buttons.forEach(function(btn) {
+                if ((mode === 'three-cards' && btn.textContent === '3카드 보기') ||
+                    (mode === 'one-card' && btn.textContent === '원카드') ||
+                    (mode === 'advice-card' && btn.textContent === '오늘의조언카드') ||
+                    (mode === 'choice' && btn.textContent === '양자택일') ||
+                    (mode === 'monthly' && btn.textContent === '12개월운보기 (월별)')) {
+                    btn.classList.add('active');
+                }
+            });
+            
             currentCards = [];
-            subCards = {};
-            adviceCard = null;
-            finalChoiceCard = null;
             
             switch(mode) {
                 case 'three-cards':
@@ -610,38 +530,8 @@
         }
         
         // 카드 생성 함수
-        function createCard(cardName, direction, size = 'normal') {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'card';
-            if (size === 'large') {
-                cardDiv.style.width = '200px';
-                cardDiv.style.height = '300px';
-            }
-            
-            const cardBack = document.createElement('div');
-            cardBack.className = 'card-back';
-            cardBack.innerHTML = `
-                <div class="card-stars">
-                    <div class="card-star"></div>
-                    <div class="card-star"></div>
-                    <div class="card-star"></div>
-                    <div class="card-star"></div>
-                    <div class="card-star"></div>
-                    <div class="card-star"></div>
-                    <div class="card-star"></div>
-                </div>
-                <div class="card-constellation"></div>
-            `;
-            
-            cardDiv.appendChild(cardBack);
-            
-            // 클릭 시 카드 뒤집기 (실제 구현 시 필요)
-            cardDiv.onclick = () => {
-                // 여기에 카드 뒤집기 애니메이션과 실제 카드 이미지 표시 로직 추가
-                console.log(`Card clicked: ${cardName}, ${direction}`);
-            };
-            
-            return cardDiv;
+        function createCardHTML(cardName, direction) {
+            return '<div class="card"><div class="card-back"><div class="card-stars"><div class="card-star"></div><div class="card-star"></div><div class="card-star"></div><div class="card-star"></div><div class="card-star"></div><div class="card-star"></div><div class="card-star"></div></div><div class="card-constellation"></div></div></div>';
         }
         
         // 카드 의미 가져오기
@@ -652,14 +542,13 @@
         }
         
         // 랜덤 카드 뽑기
-        function drawRandomCards(count, exclude = []) {
+        function drawRandomCards(count) {
             const allCards = Object.keys(cardData);
-            const availableCards = allCards.filter(card => !exclude.includes(card));
             const selectedCards = [];
             
-            for (let i = 0; i < count && i < availableCards.length; i++) {
-                const randomIndex = Math.floor(Math.random() * availableCards.length);
-                const selectedCard = availableCards.splice(randomIndex, 1)[0];
+            for (let i = 0; i < count && i < allCards.length; i++) {
+                const randomIndex = Math.floor(Math.random() * allCards.length);
+                const selectedCard = allCards[randomIndex];
                 const direction = Math.random() < 0.5 ? "정방향" : "역방향";
                 selectedCards.push({ name: selectedCard, direction: direction });
             }
@@ -670,10 +559,7 @@
         // 3카드 설정
         function setupThreeCards() {
             const cardArea = document.getElementById('cardArea');
-            cardArea.innerHTML = `
-                <button class="draw-button" onclick="drawThreeCards()">🔮 3장 뽑기</button>
-                <div id="threeCardsResult"></div>
-            `;
+            cardArea.innerHTML = '<button class="draw-button" onclick="drawThreeCards()">🔮 3장 뽑기</button><div id="threeCardsResult"></div>';
         }
         
         function drawThreeCards() {
@@ -681,79 +567,102 @@
             const resultDiv = document.getElementById('threeCardsResult');
             
             let html = '<div class="cards-grid">';
-            currentCards.forEach((card, index) => {
-                html += `
-                    <div>
-                        <div class="card-info">
-                            ${createCard(card.name, card.direction).outerHTML}
-                            <div class="card-meaning">
-                                <strong>${card.direction}</strong><br>
-                                ${getCardMeaning(card.name, card.direction)}
-                            </div>
-                            ${card.direction === "역방향" ? 
-                                `<button class="special-button" onclick="showSubCard('${card.name}', ${index})">🔁 보조카드 보기</button>` : 
-                                ''
-                            }
-                            <div id="subcard-${index}"></div>
-                        </div>
-                    </div>
-                `;
-            });
+            for (let i = 0; i < currentCards.length; i++) {
+                const card = currentCards[i];
+                html += '<div><div class="card-info">' + createCardHTML(card.name, card.direction) + '<div class="card-meaning"><strong>' + card.direction + '</strong><br>' + getCardMeaning(card.name, card.direction) + '</div></div></div>';
+            }
             html += '</div>';
             
-            html += `
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="special-button" onclick="showAdviceForThreeCards()">🌟 조언카드 보기</button>
-                </div>
-                <div id="adviceCardResult"></div>
-            `;
-            
             resultDiv.innerHTML = html;
-        }
-        
-        function showSubCard(mainCardName, index) {
-            if (subCards[mainCardName]) return;
-            
-            const excludeCards = currentCards.map(c => c.name);
-            const subCard = drawRandomCards(1, excludeCards)[0];
-            subCards[mainCardName] = subCard;
-            
-            const subcardDiv = document.getElementById(`subcard-${index}`);
-            subcardDiv.innerHTML = `
-                <div class="advice-section">
-                    <h4 class="advice-title">보조카드</h4>
-                    ${createCard(subCard.name, subCard.direction).outerHTML}
-                    <div class="card-meaning">
-                        <strong>${subCard.direction}</strong><br>
-                        ${getCardMeaning(subCard.name, subCard.direction)}
-                    </div>
-                </div>
-            `;
-        }
-        
-        function showAdviceForThreeCards() {
-            if (adviceCard) return;
-            
-            const excludeCards = currentCards.map(c => c.name).concat(Object.keys(subCards));
-            adviceCard = drawRandomCards(1, excludeCards)[0];
-            
-            const adviceDiv = document.getElementById('adviceCardResult');
-            adviceDiv.innerHTML = `
-                <div class="advice-section">
-                    <h3 class="advice-title">🧭 3카드에 대한 조언</h3>
-                    <div style="text-align: center;">
-                        ${createCard(adviceCard.name, adviceCard.direction, 'large').outerHTML}
-                        <div class="card-meaning">
-                            <strong>${adviceCard.direction}</strong><br>
-                            ${getCardMeaning(adviceCard.name, adviceCard.direction)}
-                        </div>
-                    </div>
-                </div>
-            `;
         }
         
         // 원카드 설정
         function setupOneCard() {
             const cardArea = document.getElementById('cardArea');
-            cardArea.innerHTML = `
-                <button class
+            cardArea.innerHTML = '<button class="draw-button" onclick="drawOneCard()">✨ 한 장 뽑기</button><div id="oneCardResult"></div>';
+        }
+        
+        function drawOneCard() {
+            currentCards = drawRandomCards(1);
+            const resultDiv = document.getElementById('oneCardResult');
+            const card = currentCards[0];
+            
+            const html = '<div style="text-align: center;">' + createCardHTML(card.name, card.direction) + '<div class="card-meaning"><strong>' + card.direction + '</strong><br>' + getCardMeaning(card.name, card.direction) + '</div></div>';
+            
+            resultDiv.innerHTML = html;
+        }
+        
+        // 조언카드 설정
+        function setupAdviceCard() {
+            const cardArea = document.getElementById('cardArea');
+            cardArea.innerHTML = '<button class="draw-button" onclick="drawAdviceCard()">🌿 오늘의 조언카드</button><div id="adviceCardResult"></div>';
+        }
+        
+        function drawAdviceCard() {
+            currentCards = drawRandomCards(1);
+            const resultDiv = document.getElementById('adviceCardResult');
+            const card = currentCards[0];
+            
+            const html = '<div style="text-align: center;">' + createCardHTML(card.name, card.direction) + '<div class="card-meaning"><strong>' + card.direction + '</strong><br>' + getCardMeaning(card.name, card.direction) + '</div></div>';
+            
+            resultDiv.innerHTML = html;
+        }
+        
+        // 양자택일 설정
+        function setupChoice() {
+            const cardArea = document.getElementById('cardArea');
+            cardArea.innerHTML = '<div style="margin-bottom: 20px;"><input type="text" id="choice1" placeholder="선택1 질문 입력" style="width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #fff;"><input type="text" id="choice2" placeholder="선택2 질문 입력" style="width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #fff;"></div><button class="draw-button" onclick="drawChoiceCards()">🔍 선택별 카드 뽑기</button><div id="choiceResult"></div>';
+        }
+        
+        function drawChoiceCards() {
+            const choice1 = document.getElementById('choice1').value;
+            const choice2 = document.getElementById('choice2').value;
+            
+            if (!choice1 || !choice2) {
+                alert('두 선택 모두 입력해주세요.');
+                return;
+            }
+            
+            currentCards = drawRandomCards(2);
+            const resultDiv = document.getElementById('choiceResult');
+            
+            let html = '<div class="cards-grid">';
+            for (let i = 0; i < 2; i++) {
+                const card = currentCards[i];
+                const question = i === 0 ? choice1 : choice2;
+                html += '<div><div class="card-info">' + createCardHTML(card.name, card.direction) + '<h4>선택' + (i + 1) + '</h4><p>질문: ' + question + '</p><div class="card-meaning"><strong>' + card.direction + '</strong><br>' + getCardMeaning(card.name, card.direction) + '</div></div></div>';
+            }
+            html += '</div>';
+            
+            resultDiv.innerHTML = html;
+        }
+        
+        // 12개월 운세 설정
+        function setupMonthly() {
+            const cardArea = document.getElementById('cardArea');
+            let monthOptions = '';
+            for (let i = 1; i <= 12; i++) {
+                monthOptions += '<option value="' + i + '">' + i + '월</option>';
+            }
+            
+            cardArea.innerHTML = '<div style="text-align: center; margin-bottom: 20px;"><select id="monthSelect" style="padding: 10px 20px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 10px; color: #fff;">' + monthOptions + '</select></div><button class="draw-button" onclick="drawMonthlyCards()">🗓️ 12개월 운세 보기</button><div id="monthlyResult"></div>';
+        }
+        
+        function drawMonthlyCards() {
+            const selectedMonth = parseInt(document.getElementById('monthSelect').value);
+            currentCards = drawRandomCards(12);
+            const resultDiv = document.getElementById('monthlyResult');
+            
+            let html = '<div class="cards-grid">';
+            for (let i = 0; i < 12; i++) {
+                const card = currentCards[i];
+                const monthNum = (selectedMonth + i - 1) % 12 + 1;
+                html += '<div><div class="card-info"><h4>📅 ' + monthNum + '월</h4>' + createCardHTML(card.name, card.direction) + '<div class="card-meaning"><strong>' + card.direction + '</strong><br>' + getCardMeaning(card.name, card.direction) + '</div></div></div>';
+            }
+            html += '</div>';
+            
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
