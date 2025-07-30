@@ -358,66 +358,39 @@ if not st.session_state.page:
 if st.session_state.page == "main":
     st.markdown('<h1 class="main-title">🔮 타로세계</h1>', unsafe_allow_html=True)
     
-    # 카드 선택 그리드
     st.markdown("""
-    <div class="card-grid">
-        <div class="tarot-card" onclick="selectDeck('oriental')">
-            <div class="card-image-area oriental-card"></div>
-            <div class="card-title-area">동양타로</div>
-        </div>
-        <div class="tarot-card" onclick="showComingSoon('유니버셜타로')">
-            <div class="card-image-area universal-card"></div>
-            <div class="card-title-area">유니버셜타로</div>
-        </div>
-        <div class="tarot-card" onclick="showComingSoon('사주오라클카드')">
-            <div class="card-image-area saju-card"></div>
-            <div class="card-title-area">사주오라클카드</div>
-        </div>
-        <div class="tarot-card" onclick="showComingSoon('호로스코프카드')">
-            <div class="card-image-area horoscope-card"></div>
-            <div class="card-title-area">호로스코프카드</div>
-        </div>
-        <div class="tarot-card" onclick="showComingSoon('복합카드')">
-            <div class="card-image-area complex-card"></div>
-            <div class="card-title-area">복합카드</div>
-        </div>
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <p style="font-size: 1.3rem; color: #ffd700; margin-bottom: 1rem;">원하는 카드를 선택하세요</p>
+        <p style="color: #e0e0e0;">현재는 동양타로만 이용 가능합니다</p>
     </div>
-    
-    <script>
-        function selectDeck(deck) {
-            // Streamlit에서는 JavaScript로 직접 상태 변경 불가
-            // 대신 버튼 클릭 방식 사용
-        }
-        function showComingSoon(deckName) {
-            alert(deckName + '는 현재 준비중입니다.\\n\\n빠른 시일 내에 서비스를 제공할 예정이니 조금만 기다려주세요.\\n\\n현재는 동양타로만 이용 가능합니다.');
-        }
-    </script>
     """, unsafe_allow_html=True)
     
-    # 버튼으로 카드 선택
-    col1, col2, col3, col4, col5 = st.columns(5)
+    # 카드 선택 버튼들 (모바일 친화적)
+    col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("동양타로 선택", key="select_oriental"):
+        if st.button("🌓 동양타로", key="select_oriental", use_container_width=True):
             st.session_state.page = "oriental_login"
             st.session_state.selected_deck = "oriental"
             st.rerun()
     
     with col2:
-        if st.button("유니버셜타로", key="select_universal"):
-            st.error("🚧 유니버셜타로는 현재 준비중입니다.")
+        if st.button("🌟 유니버셜타로", key="select_universal", use_container_width=True):
+            st.error("🚧 준비중입니다")
+    
+    col3, col4 = st.columns(2)
     
     with col3:
-        if st.button("사주오라클", key="select_saju"):
-            st.error("🚧 사주오라클카드는 현재 준비중입니다.")
+        if st.button("🏮 사주오라클카드", key="select_saju", use_container_width=True):
+            st.error("🚧 준비중입니다")
     
     with col4:
-        if st.button("호로스코프", key="select_horoscope"):
-            st.error("🚧 호로스코프카드는 현재 준비중입니다.")
+        if st.button("♈ 호로스코프카드", key="select_horoscope", use_container_width=True):
+            st.error("🚧 준비중입니다")
     
-    with col5:
-        if st.button("복합카드", key="select_complex"):
-            st.error("🚧 복합카드는 현재 준비중입니다.")
+    # 복합카드는 한 줄로
+    if st.button("🔮 복합카드", key="select_complex", use_container_width=True):
+        st.error("🚧 준비중입니다")
 
 # 동양타로 로그인 페이지
 elif st.session_state.page == "oriental_login":
