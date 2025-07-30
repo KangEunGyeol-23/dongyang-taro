@@ -113,6 +113,11 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
     }
     
+    /* 라디오 버튼 원형 표시 숨기기 */
+    .stRadio > div > div > label > div:first-child {
+        display: none !important;
+    }
+    
     /* 라디오 버튼 옵션들 - 선명한 흰색 글씨 */
     .stRadio > div > div > label {
         color: #ffffff !important;
@@ -130,6 +135,7 @@ st.markdown("""
         text-rendering: optimizeLegibility !important;
         -webkit-font-smoothing: antialiased !important;
         -moz-osx-font-smoothing: grayscale !important;
+        cursor: pointer !important;
     }
     
     .stRadio > div > div > label:hover {
@@ -139,12 +145,6 @@ st.markdown("""
         transform: translateY(-3px) scale(1.02) !important;
         box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4) !important;
         text-shadow: 2px 2px 6px rgba(0, 0, 0, 1) !important;
-    }
-    
-    /* 선택된 라디오 버튼 */
-    .stRadio > div > div > label[data-baseweb="radio"] > div:first-child {
-        border-color: #ffd700 !important;
-        background-color: #ffd700 !important;
     }
     
     /* 라디오 버튼 텍스트 강제 선명한 흰색 */
@@ -157,20 +157,25 @@ st.markdown("""
         text-rendering: optimizeLegibility !important;
         -webkit-font-smoothing: antialiased !important;
         -moz-osx-font-smoothing: grayscale !important;
+        margin: 0 !important;
     }
     
-    /* 선택된 상태일 때 */
+    /* 선택된 상태일 때도 동일하게 */
     .stRadio > div > div > label:has(input:checked) {
-        background: rgba(255, 215, 0, 0.25) !important;
-        border-color: #ffd700 !important;
+        background: rgba(40, 40, 60, 0.8) !important;
+        border-color: rgba(255, 215, 0, 0.6) !important;
         color: #ffffff !important;
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
     }
     
     .stRadio > div > div > label:has(input:checked) > div[data-testid="stMarkdownContainer"] > p {
         color: #ffffff !important;
         font-weight: 900 !important;
         text-shadow: 2px 2px 6px rgba(0, 0, 0, 1) !important;
+    }
+    
+    /* 라디오 버튼 input 숨기기 */
+    .stRadio input[type="radio"] {
+        display: none !important;
     }
     
     /* 텍스트 입력 스타일 - 검정색 글씨 버전 */
