@@ -372,7 +372,46 @@ if st.session_state.page == "main":
         if st.button("🌓 동양타로", key="select_oriental", use_container_width=True):
             st.session_state.page = "oriental_login"
             st.session_state.selected_deck = "oriental"
-            st.rerun()
+    elif mode == "12개월운보기 (월별)":
+        selected_month = st.selectbox("현재 월을 선택하세요", list(range(1, 13)), index=datetime.datetime.now().month-1)
+        if st.button("🗓️ 12개월 운세 보기"):
+            st.session_state.monthly_cards = draw_cards(12)
+
+        if st.session_state.monthly_cards:
+            month_sequence = get_month_sequence(selected_month)
+            
+            # 월별로 순서대로 표시 (3개씩 4줄)
+            for row in range(4):  # 4줄
+                cols = st.columns(3)  # 3개씩
+                for col_idx in range(3):  # 각 줄의 3개
+                    card_idx = row * 3 + col_idx  # 0,1,2,3,4,5,6,7,8,9,10,11 순서
+                    if card_idx < 12:
+                        file, direction = st.session_state.monthly_cards[card_idx]
+                        month_num = month_sequence[card_idx]
+                        
+                        with cols[col_idx]:
+                            st.markdown(f"**📅 {month_num}월**")
+                            st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
+                            show_card(file, direction, width=180)
+                            
+                            # 역방향일 때만 보조카드 버튼
+                            if direction == "역방향":
+                                if st.button("🔁 보조카드", key=f"monthly_subcard_{card_idx}"):
+                                    exclude_files = [f for f, _ in st.session_state.monthly_cards]
+                                    subcard = draw_cards(1, exclude=exclude_files)[0]
+                                    st.session_state[f"monthly_sub_{card_idx}"] = subcard
+                                    st.rerun()
+                                
+                                # 보조카드가 있으면 표시
+                                if f"monthly_sub_{card_idx}" in st.session_state:
+                                    sub_file, sub_dir = st.session_state[f"monthly_sub_{card_idx}"]
+                                    st.markdown("**🔁 보조카드:**")
+                                    show_card(sub_file, sub_dir, width=120)
+                                    st.markdown(f"**{sub_dir}**: {get_card_meaning(card_data, sub_file, sub_dir)}")
+                
+                # 각 줄 사이에 간격 추가
+                if row < 3:  # 마지막 줄이 아닐 때만
+                    st.markdown("<br>", unsafe_allow_html=True)
     
     with col2:
         if st.button("🌟 유니버셜타로", key="select_universal", use_container_width=True):
@@ -476,7 +515,7 @@ elif st.session_state.page == "oriental_main":
     
     mode = st.radio(
         "원하는 모드를 선택하세요", 
-        ["3카드 보기", "원카드", "오늘의조언카드", "양자택일", "12개월운보기 (월별)"],
+        ["3카드 보기", "원카드", "오늘의조언카드", "양자택일", "황도12궁 점성술", "12개월운보기 (월별)"],
         horizontal=True
     )
     
@@ -593,7 +632,156 @@ elif st.session_state.page == "oriental_main":
                 show_card(file, direction, width=300)
                 st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
 
-    elif mode == "12개월운보기 (월별)":
+    # 황도12궁 점성술 모드 추가
+    elif mode == "황도12궁 점성술":
+        st.markdown("### 🌟 황도12궁 점성술 리딩")
+        st.markdown("원하는 별자리를 선택하거나 전체 운세를 확인해보세요")
+        
+        # 별자리 데이터
+        zodiac_signs = {
+            "♈ 양자리": {"element": "불", "meaning": "새로운 시작과 도전의 에너지", "dates": "3/21-4/19"},
+            "♉ 황소자리": {"element": "땅", "meaning": "안정과 풍요의 힘", "dates": "4/20-5/20"},
+            "♊ 쌍둥이자리": {"element": "공기", "meaning": "소통과 변화의 지혜", "dates": "5/21-6/20"},
+            "♋ 게자리": {"element": "물", "meaning": "감정과 보호의 에너지", "dates": "6/21-7/22"},
+            "♌ 사자자리": {"element": "불", "meaning": "창조와 표현의 힘", "dates": "7/23-8/22"},
+            "♍ 처녀자리": {"element": "땅", "meaning": "완벽과 봉사의 정신", "dates": "8/23-9/22"},
+            "♎ 천칭자리": {"element": "공기", "meaning": "균형과 조화의 미학", "dates": "9/23-10/22"},
+            "♏ 전갈자리": {"element": "물", "meaning": "변화와 재생의 신비", "dates": "10/23-11/21"},
+            "♐ 궁수자리": {"element": "불", "meaning": "모험과 확장의 철학", "dates": "11/22-12/21"},
+            "♑ 염소자리": {"element": "땅", "meaning": "성취와 책임의 의지", "dates": "12/22-1/19"},
+            "♒ 물병자리": {"element": "공기", "meaning": "혁신과 자유의 비전", "dates": "1/20-2/18"},
+            "♓ 물고기자리": {"element": "물", "meaning": "직감과 영성의 깊이", "dates": "2/19-3/20"}
+        }
+        
+        # 전체 운세 버튼
+        if st.button("🌟 전체 12별자리 운세 보기", key="all_zodiac"):
+            st.session_state.zodiac_reading = "all"
+            st.rerun()
+        
+        # 개별 별자리 선택 (3x4 그리드)
+        st.markdown("#### 개별 별자리 선택:")
+        
+        # 첫 번째 줄
+        col1, col2, col3, col4 = st.columns(4)
+        zodiac_list = list(zodiac_signs.keys())
+        
+        with col1:
+            if st.button(zodiac_list[0], key="zodiac_0"): # 양자리
+                st.session_state.zodiac_reading = zodiac_list[0]
+                st.rerun()
+        with col2:
+            if st.button(zodiac_list[1], key="zodiac_1"): # 황소자리
+                st.session_state.zodiac_reading = zodiac_list[1]
+                st.rerun()
+        with col3:
+            if st.button(zodiac_list[2], key="zodiac_2"): # 쌍둥이자리
+                st.session_state.zodiac_reading = zodiac_list[2]
+                st.rerun()
+        with col4:
+            if st.button(zodiac_list[3], key="zodiac_3"): # 게자리
+                st.session_state.zodiac_reading = zodiac_list[3]
+                st.rerun()
+        
+        # 두 번째 줄
+        col5, col6, col7, col8 = st.columns(4)
+        with col5:
+            if st.button(zodiac_list[4], key="zodiac_4"): # 사자자리
+                st.session_state.zodiac_reading = zodiac_list[4]
+                st.rerun()
+        with col6:
+            if st.button(zodiac_list[5], key="zodiac_5"): # 처녀자리
+                st.session_state.zodiac_reading = zodiac_list[5]
+                st.rerun() 
+        with col7:
+            if st.button(zodiac_list[6], key="zodiac_6"): # 천칭자리
+                st.session_state.zodiac_reading = zodiac_list[6]
+                st.rerun()
+        with col8:
+            if st.button(zodiac_list[7], key="zodiac_7"): # 전갈자리
+                st.session_state.zodiac_reading = zodiac_list[7]
+                st.rerun()
+        
+        # 세 번째 줄
+        col9, col10, col11, col12 = st.columns(4)
+        with col9:
+            if st.button(zodiac_list[8], key="zodiac_8"): # 궁수자리
+                st.session_state.zodiac_reading = zodiac_list[8]
+                st.rerun()
+        with col10:
+            if st.button(zodiac_list[9], key="zodiac_9"): # 염소자리
+                st.session_state.zodiac_reading = zodiac_list[9]
+                st.rerun()
+        with col11:
+            if st.button(zodiac_list[10], key="zodiac_10"): # 물병자리
+                st.session_state.zodiac_reading = zodiac_list[10]
+                st.rerun()
+        with col12:
+            if st.button(zodiac_list[11], key="zodiac_11"): # 물고기자리
+                st.session_state.zodiac_reading = zodiac_list[11]
+                st.rerun()
+        
+        # 선택된 별자리 결과 표시
+        if "zodiac_reading" in st.session_state and st.session_state.zodiac_reading:
+            st.markdown("---")
+            
+            if st.session_state.zodiac_reading == "all":
+                st.markdown("### 🌟 전체 12별자리 운세")
+                
+                # 12개 별자리 카드 뽑기
+                if "zodiac_cards" not in st.session_state:
+                    st.session_state.zodiac_cards = draw_cards(12)
+                
+                # 3x4 그리드로 표시
+                for row in range(3):
+                    cols = st.columns(4)
+                    for col_idx in range(4):
+                        card_idx = row * 4 + col_idx
+                        if card_idx < 12:
+                            zodiac_name = zodiac_list[card_idx]
+                            zodiac_info = zodiac_signs[zodiac_name]
+                            file, direction = st.session_state.zodiac_cards[card_idx]
+                            
+                            with cols[col_idx]:
+                                st.markdown(f"**{zodiac_name}**")
+                                st.markdown(f"*{zodiac_info['dates']}*")
+                                show_card(file, direction, width=120)
+                                st.markdown(f"**{direction}**")
+                                st.markdown(f"{zodiac_info['meaning']}")
+                                st.markdown(f"🌟 {get_card_meaning(card_data, file, direction)}")
+            
+            else:
+                # 개별 별자리 리딩
+                selected_zodiac = st.session_state.zodiac_reading
+                zodiac_info = zodiac_signs[selected_zodiac]
+                
+                st.markdown(f"### {selected_zodiac} 운세")
+                
+                col1, col2, col3 = st.columns([1, 2, 1])
+                with col2:
+                    st.markdown(f"**날짜**: {zodiac_info['dates']}")
+                    st.markdown(f"**원소**: {zodiac_info['element']}")
+                    st.markdown(f"**의미**: {zodiac_info['meaning']}")
+                    
+                    # 해당 별자리 카드 뽑기
+                    if f"zodiac_card_{selected_zodiac}" not in st.session_state:
+                        st.session_state[f"zodiac_card_{selected_zodiac}"] = draw_cards(1)[0]
+                    
+                    file, direction = st.session_state[f"zodiac_card_{selected_zodiac}"]
+                    show_card(file, direction, width=250)
+                    st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
+        
+        # 초기화 버튼
+        if st.button("🔄 점성술 리딩 초기화"):
+            if "zodiac_reading" in st.session_state:
+                del st.session_state.zodiac_reading
+            if "zodiac_cards" in st.session_state:
+                del st.session_state.zodiac_cards
+            # 개별 별자리 카드들도 초기화
+            for zodiac in zodiac_signs.keys():
+                key = f"zodiac_card_{zodiac}"
+                if key in st.session_state:
+                    del st.session_state[key]
+            st.rerun()
         selected_month = st.selectbox("현재 월을 선택하세요", list(range(1, 13)), index=datetime.datetime.now().month-1)
         if st.button("🗓️ 12개월 운세 보기"):
             st.session_state.monthly_cards = draw_cards(12)
