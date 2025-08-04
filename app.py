@@ -47,114 +47,6 @@ st.markdown("""
         margin-bottom: 2rem;
     }
     
-    /* 카드 선택 그리드 */
-    .card-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 20px;
-        max-width: 900px;
-        margin: 0 auto 2rem auto;
-    }
-    
-    /* 개별 카드 스타일 */
-    .tarot-card {
-        background: white;
-        border-radius: 10px;
-        padding: 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 3px solid #ddd;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        overflow: hidden;
-        aspect-ratio: 2/3;
-        position: relative;
-    }
-    
-    .tarot-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
-        border-color: #ffd700;
-    }
-    
-    .card-image-area {
-        height: 80%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .card-title-area {
-        height: 20%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: #333;
-        background: #f8f9fa;
-        border-top: 1px solid #ddd;
-    }
-    
-    /* 각 카드별 배경 */
-    .oriental-card {
-        background: linear-gradient(135deg, #2d1b69, #11052c);
-    }
-    
-    .oriental-card::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(90deg, #fff 50%, #000 50%);
-    }
-    
-    .universal-card {
-        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-        background-image: 
-            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3) 2px, transparent 3px),
-            radial-gradient(circle at 70% 50%, rgba(255,255,255,0.4) 3px, transparent 4px),
-            radial-gradient(circle at 50% 80%, rgba(255,255,255,0.2) 2px, transparent 3px);
-    }
-    
-    .saju-card {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        color: #ffd700;
-        font-size: 2rem;
-        font-weight: bold;
-    }
-    
-    .saju-card::after {
-        content: '福';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 2.5rem;
-        color: #ffd700;
-    }
-    
-    .horoscope-card {
-        background: linear-gradient(135deg, #7c2d12, #ea580c);
-        background-image: 
-            conic-gradient(from 0deg at 50% 50%, 
-                transparent 30deg, 
-                rgba(255,215,0,0.3) 60deg, 
-                transparent 90deg);
-    }
-    
-    .complex-card {
-        background: linear-gradient(135deg, #064e3b, #059669);
-        background-image: 
-            linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%);
-        background-size: 20px 20px;
-    }
-    
     /* 텍스트 입력 스타일 */
     .stTextInput > div > div > input {
         background: rgba(255, 255, 255, 0.95) !important;
@@ -164,17 +56,6 @@ st.markdown("""
         font-size: 1.2rem !important;
         font-weight: bold !important;
         padding: 12px 15px !important;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: #ffed4e !important;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8) !important;
-        outline: none !important;
-    }
-    
-    .stTextInput > div > div > input::placeholder {
-        color: rgba(0, 0, 0, 0.6) !important;
-        opacity: 1 !important;
     }
     
     /* 라디오 버튼 스타일 */
@@ -198,69 +79,92 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3) !important;
     }
     
-    .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4) !important;
+    /* 셀렉트박스 스타일 */
+    .stSelectbox > div > div > select {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 3px solid #ffd700 !important;
+        border-radius: 10px !important;
+        color: #000000 !important;
+        font-weight: bold !important;
     }
     
-    /* 준비중 메시지 */
-    .coming-soon {
-        background: rgba(255, 165, 0, 0.1);
-        border: 2px solid #ffa500;
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-        margin: 2rem 0;
-    }
-    
-    .coming-soon h3 {
-        color: #ffa500;
-        margin-bottom: 1rem;
-    }
-    
-    .coming-soon p {
-        color: #e0e0e0;
-        line-height: 1.6;
-    }
-    
-    /* 배경 별들 */
-    .stars-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: -1;
-    }
-    
-    .star {
-        position: absolute;
-        width: 2px;
-        height: 2px;
-        background: #ffd700;
-        border-radius: 50%;
-        animation: twinkle 3s infinite alternate;
-    }
-    
-    @keyframes twinkle {
-        0% { opacity: 0.3; }
-        100% { opacity: 1; }
+    /* 텍스트 영역 스타일 */
+    .stTextArea > div > div > textarea {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 3px solid #ffd700 !important;
+        border-radius: 10px !important;
+        color: #000000 !important;
+        font-family: monospace !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 배경 별들
-st.markdown("""
-<div class="stars-bg">
-    <div class="star" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
-    <div class="star" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
-    <div class="star" style="top: 70%; left: 10%; animation-delay: 2s;"></div>
-    <div class="star" style="top: 80%; left: 90%; animation-delay: 0.5s;"></div>
-    <div class="star" style="top: 40%; left: 70%; animation-delay: 1.5s;"></div>
-    <div class="star" style="top: 60%; left: 30%; animation-delay: 2.5s;"></div>
-</div>
-""", unsafe_allow_html=True)
+# 백초귀장술 데이터
+def get_guijang_data():
+    """백초귀장술 테이블 데이터 반환"""
+    return [
+        ['子日', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록'],
+        ['丑日', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진'],
+        ['寅日', '강일진', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주'],
+        ['卯日', '백병주', '강일진', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건'],
+        ['辰日', '금조건', '백병주', '강일진', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식'],
+        ['巳日', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신'],
+        ['午日', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록'],
+        ['未日', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신', '합식', '기러기', '공망신', '약일충'],
+        ['申日', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신', '합식', '기러기', '공망신'],
+        ['酉日', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신', '합식', '기러기'],
+        ['戌日', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신', '합식'],
+        ['亥日', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록', '사살신']
+    ]
+
+def get_guijang_interpretations():
+    """백초귀장술 해석 데이터 반환"""
+    return {
+        '퇴식': '자리에 있으니 관재구설과 여자를 조심해야 하며 매사가 하기 싫다. 질병을 얻게 되거나 하는 일마다 신통치가 않아 의욕도 없고 귀찮고 기분은 완전히 바닥이다. 이런 달에는 시험이나 취업을 하려하면 하는 일마다 잘 되지도 않는다. 억지스럽게 일을 성사시켰다면 후에 낭패를 보게 되고 여자가 끼어 있으면 더욱 불리한 달이니 조심해야 하는 달이다. 좋은 일보다 나쁜 일이 더 많은 달이니 조심해야 하는 달이다.',
+        '금조건': '의 자리에 있으니 소득이 있는 달이다. 귀인이 도와서 일도 잘 풀리고 금전적 여유도 생기겠다. 장사하는 사람이라면 그동안 못 받았던 미수금이 있다면 이 달에 받을 수 있다.',
+        '백병주': '의 자리이다. 힘든 달이 되겠다. 이달에는 건강까지 악화되어 병원 출입을 하게 된다. 지긋지긋하게 일이 꼬이고 시비구설을 조심해야 하고 중상모략이 있을 수 있는 매우 않 좋은 달이니 조심해야 하는 달이다.',
+        '강일진': ' 달이다. 이달에는 기획했던 일이나 동업, 사업관계가 순조롭게 진행되는 달이다. 외향적으로 될 것도 같고 아닌 것도 같아 두 마음이다. 결정해야 될 문제가 있는 달이다. 하는 것이 더 유리하다. 운이 상승하는 달이다. 건강상태도 좋고 좋은 매물이나 물건도 나타나는 달이다. 새로운 일을 추진해도 괜찮은 달이다.',
+        '천록': ' 자리다. 이달에는 희망이 상승하는 운이라서 마음만 바쁘고 새로운 일을 시작하고 싶은 충동 때문에 의욕 과다로 무조건 밀어 붙이게 된다. 시작은 좋은데 뒤에 스트레스 좀 받는다. 아랫사람의 하극상 입신사(立身事) 문제로 정신적인 괴로움이 발생해서 스트레스가 심한 달이 된다. 하지만 치고 빠지는 승부사는 결과가 좋다.',
+        '사살신': ' 자리이다. 이 상담자 본인은 능력이 마비되어 하는 일마다 일이 꼬이고 시비 구설을 조심해야 하고 놀라고 의혹스런 일이나 돌발 사고가 발생할 수 있는 매우 않 좋은 달이니 조심해야 하는 달이다. 초상집에 갈 일이 생겨도 가지 말아야 한다.',
+        '합식': '자리에 해당한다. 식구가 늘던가 문서가 들어오는 좋은 달이 된다. 이런 달에는 결혼하던가, 약혼, 맞선, 계약체결, 취임식, 약속, 이력서 제출, 문서 구입, 면접, 합의, 경조사 등을 행하면 아주 길(吉)하다.',
+        '기러기': ' 달이다. 이동수가 있는 달이다. 지금 있는 자리에서 움직여야 된다. 이사를 하던지 여행을 떠날 수 있다. 하지만 일에 성과는 별로 없다. 모두 날아가 버릴 것이다.',
+        '공망신': '의 달로 헛수고 하는 달이다. 계획한 일이 있다면 무산이 되고 바람을 맞게 된다. 만약에 이런 달에 약혼, 계약체결, 취임식, 이력서 제출, 문서 구입, 맞선, 면접, 경조사를 행하게 된다면 허사로 돌아갈 확률이 높고 만일 일이 성사 된다고 해도 반드시 뒷 탈이 생기게 되고 실망이 크게 된다. 노력해도 잘 안되는 달이다.',
+        '약일충': '의 달로 좌불안석으로 마음이 붕 떠서 헤매는 달이다. 터 부정이 나서 이동, 변동할 일도 생기면 우왕좌왕 하면서 움직이는 때로 손재수가 생기는 달을 보내게 된다. 맥이 빠지는 달이다.',
+        '원진록': '의 달이다. 매사 일이 성사되기 어렵고 방해자가 생겨서 일이 지체가 되고 주변 사람과 원수 관계가 되니 본인이 한발 물러서게 되고 일이 진행이 안되고 지체되는 달이다.',
+        '해결신': '의 달이다. 지금까지 답답했던 일들이 해결되는 달이다. 본인이 이리저리 뛰어다니며 해결해야 하기 때문에 바쁜 달이다. 하지만 하고 싶은 일은 귀인이 나타나서 해결을 해주니 성과가 있어 기쁜 달이기도 한다.'
+    }
+
+def get_time_to_month():
+    """시간대별 월 매핑"""
+    return {
+        '寅': 1, '卯': 2, '辰': 3, '巳': 4, '午': 5, '未': 6,
+        '申': 7, '酉': 8, '戌': 9, '亥': 10, '子': 11, '丑': 12
+    }
+
+def display_guijang_table():
+    """백초귀장술 표를 Streamlit 테이블로 표시"""
+    table_data = get_guijang_data()
+    time_columns = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑']
+    
+    # DataFrame 생성
+    df_data = []
+    for row in table_data:
+        df_data.append(row)
+    
+    df = pd.DataFrame(df_data, columns=['날짜'] + time_columns)
+    
+    # 스타일 함수 정의
+    def style_cells(val):
+        if val == '사살신':
+            return 'background-color: #ffebee; color: #d32f2f; font-weight: bold'
+        elif val in ['합식', '강일진', '해결신', '금조건']:
+            return 'background-color: #e3f2fd; color: #1976d2; font-weight: bold'
+        else:
+            return 'background-color: white; color: black'
+    
+    # 스타일 적용된 데이터프레임 표시
+    styled_df = df.style.applymap(style_cells)
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
 # 유틸리티 함수들
 @st.cache_data
@@ -361,7 +265,7 @@ if st.session_state.page == "main":
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
         <p style="font-size: 1.3rem; color: #ffd700; margin-bottom: 1rem;">원하는 카드를 선택하세요</p>
-        <p style="color: #e0e0e0;">현재는 동양타로만 이용 가능합니다</p>
+        <p style="color: #e0e0e0;">현재는 동양타로와 백초귀장술이 이용 가능합니다</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -388,9 +292,129 @@ if st.session_state.page == "main":
         if st.button("♈ 호로스코프카드", key="select_horoscope", use_container_width=True):
             st.error("🚧 준비중입니다")
     
-    # 복합카드는 한 줄로
-    if st.button("🔮 복합카드", key="select_complex", use_container_width=True):
-        st.error("🚧 준비중입니다")
+    # 백초귀장술은 한 줄로
+    if st.button("🔮 백초귀장술", key="select_guijang", use_container_width=True):
+        st.session_state.page = "guijang_main"
+        st.rerun()
+
+# 백초귀장술 메인 페이지
+elif st.session_state.page == "guijang_main":
+    st.markdown('<h1 style="text-align: center; color: #ffd700; font-size: 2.5rem; margin-bottom: 10px;">🔮 백초귀장술</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; font-size: 1.2rem; color: #c9b037; margin-bottom: 20px;">무조건 일진을 기준!!</p>', unsafe_allow_html=True)
+    
+    if st.button("🏠 처음으로"):
+        st.session_state.page = "main"
+        st.rerun()
+    
+    st.markdown("---")
+    
+    # 백초귀장술 표 표시
+    st.subheader("📅 백초귀장술표")
+    
+    with st.expander("📖 사용법 보기", expanded=False):
+        st.markdown("""
+        **🔍 백초귀장술표 사용법:**
+        - **세로축(행)**: 날짜 (子日, 丑日, 寅日... 亥日)
+        - **가로축(열)**: 시간 (寅, 卯, 辰... 丑)
+        - **빨간색**: 사살신 (흉한 일진)
+        - **파란색**: 합식, 강일진, 해결신, 금조건 (길한 일진)
+        - **검정색**: 나머지 일진들
+        
+        **사용 예시**: 巳日(사일)의 寅시(인시) → 퇴식 → 음력 1월
+        """)
+    
+    # 백초귀장술 표 표시
+    display_guijang_table()
+    
+    st.markdown("---")
+    
+    # 상담 결과 생성 섹션
+    st.subheader("🎯 백초귀장술 상담")
+    
+    # 날짜 선택
+    day_options = ['子日', '丑日', '寅日', '卯日', '辰日', '巳日', '午日', '未日', '申日', '酉日', '戌日', '亥日']
+    selected_day = st.selectbox("📅 상담받을 날짜를 선택하세요", day_options, index=5)  # 기본값: 巳日
+    
+    if st.button("🔮 백초귀장술 상담 결과 생성", use_container_width=True):
+        st.session_state.guijang_day = selected_day
+        st.session_state.show_guijang_result = True
+    
+    # 상담 결과 표시
+    if hasattr(st.session_state, 'show_guijang_result') and st.session_state.show_guijang_result:
+        selected_day = st.session_state.guijang_day
+        
+        st.markdown("---")
+        st.subheader(f"📋 {selected_day} 백초귀장술 상담 결과")
+        
+        # 상담 정보 표시
+        today = datetime.datetime.now()
+        st.info(f"📅 **상담 일자**: {today.strftime('%Y년 %m월 %d일')} | 🔮 **해당 일진**: {selected_day}")
+        
+        # 테이블 데이터 가져오기
+        table_data = get_guijang_data()
+        interpretations = get_guijang_interpretations()
+        time_to_month = get_time_to_month()
+        
+        # 선택된 날짜의 데이터 찾기
+        day_row = None
+        for row in table_data:
+            if row[0] == selected_day:
+                day_row = row
+                break
+        
+        if day_row:
+            time_columns = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑']
+            
+            # 월별 해석 표시
+            for i, time in enumerate(time_columns):
+                interpretation = day_row[i + 1]  # +1 because first column is day name
+                month = time_to_month[time]
+                description = interpretations[interpretation]
+                
+                # 색상에 따른 이모지 결정
+                if interpretation == '사살신':
+                    emoji = "🔴"
+                    alert_type = "error"
+                elif interpretation in ['합식', '강일진', '해결신', '금조건']:
+                    emoji = "🔵"
+                    alert_type = "success"
+                else:
+                    emoji = "⚫"
+                    alert_type = "info"
+                
+                # 각 월의 해석을 expander로 표시
+                with st.expander(f"{emoji} **{month}월 - {interpretation}**", expanded=False):
+                    st.write(f"**음력({month}月){interpretation}** {description}")
+            
+            st.markdown("---")
+            
+            # 결과 출력 버튼들
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.button("📄 상담 결과 텍스트로 출력", use_container_width=True):
+                    # 출력용 텍스트 생성
+                    result_text = f"🔮 백초귀장술 상담 결과지\n"
+                    result_text += f"상담 일자: {today.strftime('%Y년 %m월 %d일')}\n"
+                    result_text += f"해당 일진: {selected_day}\n"
+                    result_text += "=" * 50 + "\n\n"
+                    
+                    for i, time in enumerate(time_columns):
+                        interpretation = day_row[i + 1]
+                        month = time_to_month[time]
+                        description = interpretations[interpretation]
+                        result_text += f"【{month}월 - {interpretation}】\n"
+                        result_text += f"음력({month}月){interpretation} {description}\n\n"
+                    
+                    result_text += "=" * 50 + "\n"
+                    result_text += "※ 본 상담 결과는 참고용이며, 개인의 노력과 선택이 가장 중요합니다."
+                    
+                    st.text_area("📋 상담 결과 (복사해서 사용하세요)", result_text, height=400)
+            
+            with col2:
+                if st.button("🔄 결과 초기화", use_container_width=True):
+                    st.session_state.show_guijang_result = False
+                    st.rerun()
 
 # 동양타로 로그인 페이지
 elif st.session_state.page == "oriental_login":
