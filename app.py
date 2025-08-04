@@ -24,18 +24,15 @@ st.set_page_config(
 # CSS 스타일 적용
 st.markdown("""
 <style>
-    /* 전체 배경 */
     .stApp {
         background: linear-gradient(135deg, #0d1421, #1a1a2e, #16213e);
         color: white;
     }
     
-    /* 메인 헤더 숨기기 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* 메인 타이틀 */
     .main-title {
         text-align: center;
         font-size: 3rem;
@@ -47,7 +44,6 @@ st.markdown("""
         margin-bottom: 2rem;
     }
     
-    /* 텍스트 입력 스타일 */
     .stTextInput > div > div > input {
         background: rgba(255, 255, 255, 0.95) !important;
         border: 3px solid #ffd700 !important;
@@ -58,7 +54,6 @@ st.markdown("""
         padding: 12px 15px !important;
     }
     
-    /* 라디오 버튼 스타일 */
     .stRadio label, .stRadio p {
         color: #ffffff !important;
         font-size: 1.2rem !important;
@@ -66,7 +61,6 @@ st.markdown("""
         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
     }
     
-    /* 버튼 스타일 */
     .stButton > button {
         background: linear-gradient(45deg, #ffd700, #c9b037) !important;
         color: #1a1a2e !important;
@@ -79,7 +73,6 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3) !important;
     }
     
-    /* 셀렉트박스 스타일 */
     .stSelectbox > div > div > select {
         background: rgba(255, 255, 255, 0.95) !important;
         border: 3px solid #ffd700 !important;
@@ -88,7 +81,6 @@ st.markdown("""
         font-weight: bold !important;
     }
     
-    /* 텍스트 영역 스타일 */
     .stTextArea > div > div > textarea {
         background: rgba(255, 255, 255, 0.95) !important;
         border: 3px solid #ffd700 !important;
@@ -101,7 +93,6 @@ st.markdown("""
 
 # 백초귀장술 데이터
 def get_guijang_data():
-    """백초귀장술 테이블 데이터 반환"""
     return [
         ['子日', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진', '천록'],
         ['丑日', '천록', '사살신', '합식', '기러기', '공망신', '약일충', '원진록', '해결신', '퇴식', '금조건', '백병주', '강일진'],
@@ -118,7 +109,6 @@ def get_guijang_data():
     ]
 
 def get_guijang_interpretations():
-    """백초귀장술 해석 데이터 반환"""
     return {
         '퇴식': '자리에 있으니 관재구설과 여자를 조심해야 하며 매사가 하기 싫다. 질병을 얻게 되거나 하는 일마다 신통치가 않아 의욕도 없고 귀찮고 기분은 완전히 바닥이다. 이런 달에는 시험이나 취업을 하려하면 하는 일마다 잘 되지도 않는다. 억지스럽게 일을 성사시켰다면 후에 낭패를 보게 되고 여자가 끼어 있으면 더욱 불리한 달이니 조심해야 하는 달이다. 좋은 일보다 나쁜 일이 더 많은 달이니 조심해야 하는 달이다.',
         '금조건': '의 자리에 있으니 소득이 있는 달이다. 귀인이 도와서 일도 잘 풀리고 금전적 여유도 생기겠다. 장사하는 사람이라면 그동안 못 받았던 미수금이 있다면 이 달에 받을 수 있다.',
@@ -135,35 +125,41 @@ def get_guijang_interpretations():
     }
 
 def get_time_to_month():
-    """시간대별 월 매핑"""
     return {
         '寅': 1, '卯': 2, '辰': 3, '巳': 4, '午': 5, '未': 6,
         '申': 7, '酉': 8, '戌': 9, '亥': 10, '子': 11, '丑': 12
     }
 
 def display_guijang_table():
-    """백초귀장술 표를 Streamlit 테이블로 표시"""
     table_data = get_guijang_data()
     time_columns = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑']
     
-    # DataFrame 생성
     df_data = []
     for row in table_data:
         df_data.append(row)
     
     df = pd.DataFrame(df_data, columns=['날짜'] + time_columns)
     
-    # 스타일 함수 정의
-    def style_cells(val):
+    def color_cells(val):
         if val == '사살신':
-            return 'background-color: #ffebee; color: #d32f2f; font-weight: bold'
+            return 'background-color: #ffcdd2; color: #d32f2f; font-weight: bold; text-align: center;'
         elif val in ['합식', '강일진', '해결신', '금조건']:
-            return 'background-color: #e3f2fd; color: #1976d2; font-weight: bold'
+            return 'background-color: #e1f5fe; color: #1976d2; font-weight: bold; text-align: center;'
+        elif val in ['子日', '丑日', '寅日', '卯日', '辰日', '巳日', '午日', '未日', '申日', '酉日', '戌日', '亥日']:
+            return 'background-color: #f5f5f5; color: #333; font-weight: bold; text-align: center;'
         else:
-            return 'background-color: white; color: black'
+            return 'background-color: #fafafa; color: #666; text-align: center;'
     
-    # 스타일 적용된 데이터프레임 표시
-    styled_df = df.style.applymap(style_cells)
+    styled_df = df.style.applymap(color_cells).set_properties(**{
+        'border': '1px solid #ddd',
+        'font-size': '12px',
+        'padding': '8px'
+    }).set_table_styles([
+        {'selector': 'th', 'props': [('background-color', '#ffd700'), ('color', '#333'), ('font-weight', 'bold'), ('text-align', 'center'), ('border', '1px solid #ddd')]},
+        {'selector': 'td', 'props': [('border', '1px solid #ddd')]},
+        {'selector': 'table', 'props': [('border-collapse', 'collapse'), ('width', '100%')]}
+    ])
+    
     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
 # 유틸리티 함수들
@@ -258,7 +254,7 @@ if "final_choice_card" not in st.session_state:
 if not st.session_state.page:
     st.session_state.page = "main"
 
-# 메인 페이지 (카드 선택)
+# 메인 페이지
 if st.session_state.page == "main":
     st.markdown('<h1 class="main-title">🔮 타로세계</h1>', unsafe_allow_html=True)
     
@@ -269,7 +265,6 @@ if st.session_state.page == "main":
     </div>
     """, unsafe_allow_html=True)
     
-    # 카드 선택 버튼들 (모바일 친화적)
     col1, col2 = st.columns(2)
     
     with col1:
@@ -292,51 +287,113 @@ if st.session_state.page == "main":
         if st.button("♈ 호로스코프카드", key="select_horoscope", use_container_width=True):
             st.error("🚧 준비중입니다")
     
-    # 백초귀장술은 한 줄로
     if st.button("🔮 백초귀장술", key="select_guijang", use_container_width=True):
-        st.session_state.page = "guijang_main"
+        st.session_state.page = "guijang_login"
         st.rerun()
+
+# 백초귀장술 로그인 페이지
+elif st.session_state.page == "guijang_login":
+    st.markdown('<h1 class="main-title">🔮 백초귀장술</h1>', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="max-width: 600px; margin: 0 auto; text-align: center; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin-bottom: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 215, 0, 0.2);">
+        <p style="font-size: 1.5rem; font-weight: bold; color: #ffd700; margin-bottom: 15px;">무조건 일진을 기준!!</p>
+        <p style="font-size: 1.1rem; color: #e0e0e0;">동양의 오랜 지혜가 담긴 백초귀장술이 당신의 운명을 밝혀드립니다.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    input_id = st.text_input("✨ 아이디를 입력하세요", placeholder="등록된 아이디를 입력해주세요")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("입장하기"):
+            if input_id:
+                if input_id in ADMIN_IDS or input_id in USER_IDS:
+                    st.session_state.login = input_id
+                    st.session_state.page = "guijang_main"
+                    log_login(input_id)
+                    st.rerun()
+                else:
+                    st.error("등록되지 않은 사용자입니다.")
+            else:
+                st.error("아이디를 입력해주세요.")
+    
+    with col2:
+        if st.button("뒤로 가기"):
+            st.session_state.page = "main"
+            st.rerun()
 
 # 백초귀장술 메인 페이지
 elif st.session_state.page == "guijang_main":
+    user_id = st.session_state.login
+    is_admin = user_id in ADMIN_IDS
+    is_user = user_id in USER_IDS
+    
     st.markdown('<h1 style="text-align: center; color: #ffd700; font-size: 2.5rem; margin-bottom: 10px;">🔮 백초귀장술</h1>', unsafe_allow_html=True)
     st.markdown('<p style="text-align: center; font-size: 1.2rem; color: #c9b037; margin-bottom: 20px;">무조건 일진을 기준!!</p>', unsafe_allow_html=True)
     
-    if st.button("🏠 처음으로"):
-        st.session_state.page = "main"
-        st.rerun()
+    st.success(f"✨ {user_id}님 환영합니다. ✨")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🏠 처음으로"):
+            st.session_state.page = "main"
+            st.session_state.login = ""
+            st.rerun()
+    
+    with col2:
+        if st.button("🔄 초기화"):
+            if hasattr(st.session_state, 'show_guijang_result'):
+                st.session_state.show_guijang_result = False
+            st.rerun()
+    
+    if is_admin:
+        st.markdown("---")
+        st.subheader("📜 로그인 기록 관리 (관리자 전용)")
+        if os.path.exists(LOGIN_LOG_FILE):
+            df_log = pd.read_csv(LOGIN_LOG_FILE)
+            st.dataframe(df_log.tail(20), use_container_width=True)
+            if st.button("🗑️ 로그인 기록 초기화"):
+                os.remove(LOGIN_LOG_FILE)
+                st.success("✅ 로그인 기록이 초기화되었습니다.")
+        else:
+            st.info("📝 아직 로그인 기록이 없습니다.")
     
     st.markdown("---")
     
-    # 백초귀장술 표 표시
-    st.subheader("📅 백초귀장술표")
+    st.markdown("""
+    <div style="text-align: center; margin: 20px 0;">
+        <h3 style="color: #ffd700; margin-bottom: 10px;">📅 백초귀장술표</h3>
+        <p style="color: #e0e0e0; font-size: 1.1rem;">아래 버튼을 클릭하여 표와 사용법을 확인하세요</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    with st.expander("📖 사용법 및 표 보기", expanded=False):
+    with st.expander("🔍 📊 백초귀장술표 보기 & 사용법 (클릭하여 펼치기)", expanded=False):
         st.markdown("""
-        **🔍 백초귀장술표 사용법:**
-        - **세로축(행)**: 날짜 (子日, 丑日, 寅日... 亥日)
-        - **가로축(열)**: 시간 (寅, 卯, 辰... 丑)
-        - **빨간색**: 사살신 (흉한 일진)
-        - **파란색**: 합식, 강일진, 해결신, 금조건 (길한 일진)
-        - **검정색**: 나머지 일진들
+        ### 📖 백초귀장술표 사용법
         
-        **사용 예시**: 巳日(사일)의 寅시(인시) → 퇴식 → 음력 1월
+        **🔍 표 읽는 방법:**
+        - **세로축(행)**: 날짜 (子日, 丑日, 寅日... 亥日)
+        - **가로축(열)**: 시간 (寅, 卯, 辰... 丑시)
+        - **사용 예시**: 巳日(사일)의 寅시(인시) → 퇴식 → 음력 1월
+        
+        **🎨 색상 구분:**
+        - 🔴 **빨간색**: 사살신 (흉한 일진)
+        - 🔵 **파란색**: 합식, 강일진, 해결신, 금조건 (길한 일진)  
+        - ⚫ **검정색**: 나머지 일진들
         """)
         
         st.markdown("---")
-        st.markdown("**📊 백초귀장술표:**")
+        st.markdown("### 📊 백초귀장술표")
         
-        # 백초귀장술 표 표시
         display_guijang_table()
     
     st.markdown("---")
     
-    # 상담 결과 생성 섹션
     st.subheader("🎯 백초귀장술 상담")
     
-    # 날짜 선택
     day_options = ['子日', '丑日', '寅日', '卯日', '辰日', '巳日', '午日', '未日', '申日', '酉日', '戌日', '亥日']
-    selected_day = st.selectbox("📅 상담받을 날짜를 선택하세요", day_options, index=5)  # 기본값: 巳日
+    selected_day = st.selectbox("📅 상담받을 날짜를 선택하세요", day_options, index=5)
     
     if st.button("🔮 백초귀장술 상담 결과 생성", use_container_width=True):
         st.session_state.guijang_day = selected_day
@@ -370,7 +427,7 @@ elif st.session_state.page == "guijang_main":
             
             # 월별 해석 표시
             for i, time in enumerate(time_columns):
-                interpretation = day_row[i + 1]  # +1 because first column is day name
+                interpretation = day_row[i + 1]
                 month = time_to_month[time]
                 description = interpretations[interpretation]
                 
@@ -451,7 +508,7 @@ elif st.session_state.page == "oriental_login":
             st.session_state.page = "main"
             st.rerun()
 
-# 동양타로 메인 (기존 타로 앱)
+# 동양타로 메인
 elif st.session_state.page == "oriental_main":
     user_id = st.session_state.login
     is_admin = user_id in ADMIN_IDS
@@ -467,7 +524,6 @@ elif st.session_state.page == "oriental_main":
         if st.button("🏠 처음으로"):
             st.session_state.page = "main"
             st.session_state.login = ""
-            # 세션 상태 초기화
             for key in ["subcards", "cards", "adv_card", "card", "advice_for_three_cards", "monthly_cards", "choice_cards"]:
                 if key.endswith("cards"):
                     st.session_state[key] = []
@@ -484,7 +540,6 @@ elif st.session_state.page == "oriental_main":
                     st.session_state[key] = None
             st.rerun()
     
-    # 관리자 기능
     if is_admin:
         st.markdown("---")
         st.subheader("📜 로그인 기록 관리 (관리자 전용)")
@@ -497,7 +552,6 @@ elif st.session_state.page == "oriental_main":
         else:
             st.info("📝 아직 로그인 기록이 없습니다.")
     
-    # 타로 기능
     st.markdown("---")
     st.subheader("🔮 카드 모드")
     
@@ -521,7 +575,6 @@ elif st.session_state.page == "oriental_main":
                 st.session_state.subcards[file] = subcard
                 st.rerun()
 
-    # 안내 메시지
     if not any([st.session_state.cards, st.session_state.card, st.session_state.adv_card, st.session_state.choice_cards, st.session_state.monthly_cards]):
         st.markdown("""
         <div style="text-align: center; padding: 2rem; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 1px solid rgba(255, 215, 0, 0.2);">
@@ -628,11 +681,10 @@ elif st.session_state.page == "oriental_main":
         if st.session_state.monthly_cards:
             month_sequence = get_month_sequence(selected_month)
             
-            # 월별로 순서대로 표시 (3개씩 4줄)
-            for row in range(4):  # 4줄
-                cols = st.columns(3)  # 3개씩
-                for col_idx in range(3):  # 각 줄의 3개
-                    card_idx = row * 3 + col_idx  # 0,1,2,3,4,5,6,7,8,9,10,11 순서
+            for row in range(4):
+                cols = st.columns(3)
+                for col_idx in range(3):
+                    card_idx = row * 3 + col_idx
                     if card_idx < 12:
                         file, direction = st.session_state.monthly_cards[card_idx]
                         month_num = month_sequence[card_idx]
@@ -642,7 +694,6 @@ elif st.session_state.page == "oriental_main":
                             st.markdown(f"**{direction}**: {get_card_meaning(card_data, file, direction)}")
                             show_card(file, direction, width=180)
                             
-                            # 역방향일 때만 보조카드 버튼
                             if direction == "역방향":
                                 if st.button("🔁 보조카드", key=f"monthly_subcard_{card_idx}"):
                                     exclude_files = [f for f, _ in st.session_state.monthly_cards]
@@ -650,13 +701,11 @@ elif st.session_state.page == "oriental_main":
                                     st.session_state[f"monthly_sub_{card_idx}"] = subcard
                                     st.rerun()
                                 
-                                # 보조카드가 있으면 표시
                                 if f"monthly_sub_{card_idx}" in st.session_state:
                                     sub_file, sub_dir = st.session_state[f"monthly_sub_{card_idx}"]
                                     st.markdown("**🔁 보조카드:**")
                                     show_card(sub_file, sub_dir, width=120)
                                     st.markdown(f"**{sub_dir}**: {get_card_meaning(card_data, sub_file, sub_dir)}")
                 
-                # 각 줄 사이에 간격 추가
-                if row < 3:  # 마지막 줄이 아닐 때만
-                    st.markdown("<br>", unsafe_allow_html=True)ㅍ
+                if row < 3:
+                    st.markdown("")
