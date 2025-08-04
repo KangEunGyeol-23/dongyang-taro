@@ -659,4 +659,4 @@ elif st.session_state.page == "oriental_main":
                 
                 # 각 줄 사이에 간격 추가
                 if row < 3:  # 마지막 줄이 아닐 때만
-                    st.markdown("<br>", unsafe_allow_html=True)
+                    st.markdown("<br>", unsafe_allow_html=True)ㅍ
