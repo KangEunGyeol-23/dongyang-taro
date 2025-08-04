@@ -311,7 +311,7 @@ elif st.session_state.page == "guijang_main":
     # 백초귀장술 표 표시
     st.subheader("📅 백초귀장술표")
     
-    with st.expander("📖 사용법 보기", expanded=False):
+    with st.expander("📖 사용법 및 표 보기", expanded=False):
         st.markdown("""
         **🔍 백초귀장술표 사용법:**
         - **세로축(행)**: 날짜 (子日, 丑日, 寅日... 亥日)
@@ -322,9 +322,12 @@ elif st.session_state.page == "guijang_main":
         
         **사용 예시**: 巳日(사일)의 寅시(인시) → 퇴식 → 음력 1월
         """)
-    
-    # 백초귀장술 표 표시
-    display_guijang_table()
+        
+        st.markdown("---")
+        st.markdown("**📊 백초귀장술표:**")
+        
+        # 백초귀장술 표 표시
+        display_guijang_table()
     
     st.markdown("---")
     
