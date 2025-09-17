@@ -284,7 +284,7 @@ if st.session_state.page == "main":
             st.error("🚧 준비중입니다")
     
     with col4:
-        if st.button("♈ 호로스코프카드", key="select_horoscope", use_container_width=True):
+        if st.button("♈ 칼라타로", key="select_horoscope", use_container_width=True):
             st.error("🚧 준비중입니다")
     
     if st.button("🔮 백초귀장술", key="select_guijang", use_container_width=True):
@@ -709,3 +709,4 @@ elif st.session_state.page == "oriental_main":
                 
                 if row < 3:
                     st.markdown("")
+
